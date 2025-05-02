@@ -2,3 +2,67 @@ Matrícula: 232014370
 Nome: Arthur Alves Ribeiro
 Curso: Engenharia de Software
 ---------------------
+Matrícula: 232014370
+Nome: Arthur Alves
+Curso: Engenharia de Software
+---------------------
+Aluno especial: NÃO
+Matrícula: 232014370
+Nome: Arthur Alves
+Curso: Engenharia de Software
+---------------------
+Aluno especial: NÃO
+Matrícula: 232014370
+Nome: Arthur Alves
+Curso: 
+---------------------
+Aluno especial: NÃO
+Matrícula: 232014370
+Nome: Arthur
+Curso: ads
+---------------------
+Aluno especial: NÃO
+Matrícula: 232014370
+Nome: Arthur Alves
+Curso: ADS
+---------------------
+Aluno especial: NÃO
+Matrícula: 232014370
+Nome: Arthur
+Curso: direito
+---------------------
+Aluno especial: NÃO
+Matrícula: 232014370
+Nome: Arthur Alves
+Curso: Dentesssss
+---------------------
+Aluno especial: SIM
+Matrícula: 232014370
+Nome: Arthur Alves
+Curso: Da certo pfv
+---------------------
+Aluno especial: NÃO
+Matrícula: 232014370
+Nome: luca
+Curso: matricula n deu
+---------------------
+Aluno especial: SIM
+Matrícula: 252044880
+Nome: Shaolin
+Curso: Karate
+---------------------
+Aluno especial: NÃO
+Matrícula: 172015222
+Nome: Lucas Boa
+Curso: Teacher's languange
+---------------------
+Aluno especial: NÃO
+Matrícula: 22154780
+Nome: Flavia Cruz
+Curso: Medicina
+---------------------
+Aluno especial: SIM
+Matrícula: 242014375
+Nome: Gabriel Magioli
+Curso: Engenharia de Energia
+---------------------

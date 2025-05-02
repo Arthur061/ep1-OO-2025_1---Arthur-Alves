@@ -1,4 +1,3 @@
-
 public class IntroduçãoFront {
     public void MenuInicial() {
         System.out.println("---- - -- - -- - -- - -- - -- - ----");
@@ -23,5 +22,4 @@ public class IntroduçãoFront {
         System.err.println("3- VOLTAR PARA MENU");
         System.out.print("Sua escolha: ");
     }
-
 }

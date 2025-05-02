@@ -79,9 +79,9 @@ O enunciado do trabalho pode ser encontrado aqui:
 - [ ] Lançamento de notas e controle de presença
 - [ ] Cálculo de média final e verificação de aprovação/reprovação
 - [ ] Relatórios de desempenho acadêmico por aluno, turma e disciplina
-- [ ] Persistência de dados em arquivos (.txt ou .csv)
-- [ ] Tratamento de duplicidade de matrículas
-- [ ] Uso de herança, polimorfismo e encapsulamento
+- [X] Persistência de dados em arquivos (.txt ou .csv)
+- [X] Tratamento de duplicidade de matrículas
+- [X] Uso de herança, polimorfismo e encapsulamento
 
 ---
 
