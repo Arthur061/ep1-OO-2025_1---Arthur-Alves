@@ -19,7 +19,19 @@ public class IntroduçãoFront {
         System.out.println("");
         System.out.println("1- CADASTRAR ALUNO");
         System.out.println("2- LISTAR ALUNOS");
-        System.err.println("3- VOLTAR PARA MENU");
+        System.out.println("3- EDITAR ALUNO");
+        System.err.println("4- VOLTAR PARA MENU");
         System.out.print("Sua escolha: ");
+    }
+
+    public void EdicaoAluno() {
+        System.out.println("");
+        System.err.println("Qual informação voce deseja editar?");
+                System.out.println("");
+                System.out.println("1- MATRICULA");
+                System.out.println("2- NOME");
+                System.out.println("3- CURSO");
+                System.out.println("4- VOLTAR");
+                System.out.print("Sua escolha: ");
     }
 }
