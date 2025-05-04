@@ -1,12 +1,18 @@
-
 ---------------------
-Aluno especial: SIM
-Matrícula: 7777777
-Nome: chaves
-Curso: ads
+ALUNO ESPECIAL: SIM
+MATRICULA: 104253689
+NOME: Scardua chan
+CURSO: FLORES
 ---------------------
-Aluno especial: NÃO
-Matrícula: 7777777
-Nome: Arthur Alves Ribeiro
-Curso: ENgenhaaria de software
+---------------------
+ALUNO ESPECIAL: NÃO
+MATRICULA: 332211440
+NOME: engenharia e ambiente
+CURSO: CHIFRE
+---------------------
+---------------------
+ALUNO ESPECIAL: NÃO
+MATRICULA: 236154890
+NOME: SIM
+CURSO: ADS
 ---------------------

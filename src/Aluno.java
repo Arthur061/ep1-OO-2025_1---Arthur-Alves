@@ -45,13 +45,11 @@ public class Aluno extends Menu {
                         existe = DadosTXT.verificarSeDadoExiste(matricula); // atualiza o valor da matricula pae
                     }
                 System.err.print("Nome completo: ");
-                nome = sc.nextLine();
+                nome = sc.nextLine().toUpperCase();
                 System.err.print("Qual curso você está cursando: ");
-                curso = sc.nextLine();
-                System.out.println("");
+                curso = sc.nextLine().toUpperCase();
 
-                System.out.println("");
-                System.out.println("Qual sua condição de aluno? ");
+                System.out.println("\nQual sua condição de aluno? ");
                 System.out.println("1- Sou aluno especial");
                 System.out.println("2- Sou aluno normal");
                 System.out.print("Sua escolha: ");
@@ -74,9 +72,13 @@ public class Aluno extends Menu {
                 if (nomesAlunos.isEmpty()) {
                     System.out.println("Lista atualmente está vazia :("); Aluno voltarAluno = new Aluno(); voltarAluno.aluno();
                 } else {System.out.println( "-- Lista de todos os alunos cadastrados no sistema --");
+                    System.out.println();
                         for (int i = 0; i < nomesAlunos.size(); i++) {
                             System.out.println(i + " : "+ nomesAlunos.get(i));}    
                 }
+                System.out.println();
+                System.out.println("Voltando para menu Aluno...");
+                Aluno voltarAluno = new Aluno(); voltarAluno.aluno();
             }
             
             case 3 -> { // EDITAR ALUNO
@@ -86,23 +88,28 @@ public class Aluno extends Menu {
                 sc.nextLine();
                 switch (opcaoEditar) {
                     case 1 -> { // EDITAR MATRICULA
-                        System.out.println("Vamos editar a matricula!");
-                        System.out.println(); 
-                        System.out.print("Digite seu nome completo: ");
-                        dadoAluno = sc.nextLine().toLowerCase().trim();
+                        System.out.println("Vamos editar a matricula!\n");
 
+                        // Buscar dados do guerreiro
+                        System.out.print("Digite seu nome completo: ");
+                        dadoAluno = sc.nextLine().toUpperCase().trim();
+                        while (dadoAluno.isEmpty()) {
+                            System.out.print("Nome inválido. Digite novamente: ");
+                            dadoAluno = sc.nextLine().toUpperCase().trim();
+                        }
 
                         System.out.println("Procurando pelo nome " + dadoAluno.toUpperCase() + " na lista...");
-                        DadosTXT buscarNome = new DadosTXT();
-                        buscarNome.BuscarDados(dadoAluno);
-                        System.out.println("nome "+dadoAluno);
+                        DadosTXT buscarMatricula = new DadosTXT();
+                        buscarMatricula.BuscarDados(dadoAluno);
 
                         // Validação da nova matrícula
                         long novaMatricula;
                         while (true) {
-                            System.out.print("Digite a nova matricula do aluno: ");
+                            System.out.print("Digite a nova matricula para "+buscarMatricula.getNomeVelho()+", a atual é "+buscarMatricula.getMatriculaVelha()+": ");
                             try {
                                 novaMatricula = sc.nextLong();
+                                sc.nextLine();
+
                                 // Valida se a matrícula tem pelo menos 9 digitos (matricula padrão unb)
                                 if (Long.toString(novaMatricula).length() < 9) {
                                     System.out.println("Matrícula deve ter pelo menos 9 dígitos.");
@@ -115,30 +122,32 @@ public class Aluno extends Menu {
                             }
                         }
                         
-                        System.out.println("nome2: "+dadoAluno);
                         DadosTXT edicaoMatricula = new DadosTXT();
-                        edicaoMatricula.editarDados(dadoAluno, "Matrícula", Long.toString(novaMatricula));
+                        edicaoMatricula.editarDados(buscarMatricula.getMatriculaVelha(), "MATRICULA", Long.toString(novaMatricula));
                     }
 
-
                     case 2 -> { // EDITAR NOME
-                        System.out.println("Vamos editar o nome!");
-                        System.out.println("");
-                        System.out.print("Digite sua matricula: ");
-                        dadoAluno = sc.nextLine();
-                        DadosTXT buscarMatricula = new DadosTXT();
-                        buscarMatricula.BuscarDados(dadoAluno);}
-
+                        System.out.println("\nVamos editar o nome!\n");
+                        int mat = -1; // variavel aleatoria
+                        DadosTXT verificarMat = new DadosTXT();
+                        verificarMat.verificarMatricula(1, mat); //verificador da matricula pae
+                    }
 
                     case 3 -> { // EDITAR CURSO
-                        System.out.println("Vamos editar o curso!");
-                        System.out.println("");
-                        System.out.print("Digite sua matricula ou nome: ");
-                        dadoAluno = sc.nextLine();
-                        DadosTXT buscarCurso = new DadosTXT();
-                        buscarCurso.BuscarDados(dadoAluno);}
+                        System.out.println("\nVamos editar o curso!\n");
+                        int mat = -1;
+                        DadosTXT verificarMat = new DadosTXT();
+                        verificarMat.verificarMatricula(2, mat);
+                        }
+                    
+                    case 4 -> { // EDITAR CONDIÇÃO DO CAMARADA
+                        System.out.println("\n Vamos editar sua condição!\n");
+                        int mat = -1;
+                        DadosTXT verificarMat = new DadosTXT();
+                        verificarMat.verificarMatricula(3, mat);
+                    }
 
-                    case 4 -> {Aluno voltarAluno = new Aluno(); voltarAluno.aluno();}
+                    case 5 -> {Aluno voltarAluno = new Aluno(); voltarAluno.aluno();}
                     default -> System.err.println("Opção invalida");
                 }
             }
