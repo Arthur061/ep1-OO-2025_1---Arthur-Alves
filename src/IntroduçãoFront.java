@@ -1,21 +1,25 @@
+
+
 public class IntroduçãoFront {
     public void MenuInicial() {
         System.out.println("---- - -- - -- - -- - -- - -- - ----");
         System.out.println("    BEM-VINDO AO SISTEMA DA FCTE    ");
         System.out.println("---- - -- - -- - -- - -- - -- - ----");
-        System.out.println("\nEscolha a opção que deseja usar: \n");
-        System.out.println("1- Alunos");
-        System.out.println("2- Disciplinas e Turmas");
-        System.out.println("3- Avaliação e Frequencia");
+        System.out.println("\nQual opção você deseja acessar?\n");
+        System.out.println("1- ALUNOS");
+        System.out.println("2- DISCIPLINAS E TURMAS");
+        System.out.println("3- AVALIAÇÃO E FREQUENCIA");
         System.out.println("4- SAIR\n");
     }
     
     public void MenuAluno() {
         System.out.println("\n=== MENU DO ALUNO ===\n");
+        System.out.println("Qual opção você deseja acessar?\n");
         System.out.println("1- CADASTRAR ALUNO");
         System.out.println("2- LISTAR ALUNOS");
         System.out.println("3- EDITAR ALUNO");
-        System.err.println("4- VOLTAR PARA MENU");
+        System.out.println("4- MATRICULA E TRANCAMENTO");
+        System.err.println("5- VOLTAR PARA MENU INICIAL\n");
         System.out.print("Sua escolha: ");
     }
 
@@ -24,8 +28,34 @@ public class IntroduçãoFront {
         System.out.println("1- MATRICULA");
         System.out.println("2- NOME");
         System.out.println("3- CURSO");
-        System.out.println("4- CONDIÇÃO DO ALUNO");
-        System.out.println("5- VOLTAR MENU ALUNO");
+        System.out.println("4- VOLTAR MENU ALUNO\n");
         System.out.print("Sua escolha: ");
+    }
+
+    public void MenuDisciplinasTurmas () {
+        System.out.println("\n === MENU DE SERVIÇOS ===\n");
+        System.out.println("Qual opção você deseja acessar?\n");
+        System.out.println("1- TRANCAMENTO");
+        System.out.println("2- MATRICULA");
+        System.out.println("3- CADASTRO DE DISCIPLINA");
+        System.out.println("4- LISTAR TURMAS DISPONIVEIS");
+        System.out.println("5- VOLTAR MENU INICIAL\n");
+        System.out.print("Sua escolha: ");
+    }
+
+    public void menuTrancamento() {
+
+        System.out.println("\n Antes de tudo, me deixa saber qual o seu objetivo ");
+        System.out.println("1- TRANCAR SEMESTRE");
+        System.out.println("2- TRANCAR MATRICULA");
+        System.out.println("3- VOLTAR MENU DE SERVIÇOS");
+    }
+
+    public void CadastroDisciplina () {
+        System.out.println("A matéria possui pré-requisitos?");
+        System.out.println("1- SIM");
+        System.out.println("2- NÃO");
+        System.out.print("Sua escolha: ");
+    
     }
 }
