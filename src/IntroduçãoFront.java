@@ -58,4 +58,25 @@ public class IntroduçãoFront {
         System.out.print("Sua escolha: ");
     
     }
+
+    public void metodoAva () {
+        System.out.println("Qual o metodo de avaliação?\n");
+        System.out.println("Escolha uma das opções a seguir:");
+        System.out.println("1- (P1 + P2 + P3 + L + S) / 5");
+        System.out.println("2- (P1 + P2 * 2 + P3 * 3 + L + S) / 8");
+        System.out.print("Sua escolha: ");
+    }
+
+    public void modoAula () {
+        System.out.println("Qual o modo de aula?");
+        System.out.println("1- PRESENCIAL");
+        System.out.println("2- REMOTO");
+    }
+
+    public void TurnoDisciplina () {
+        System.out.println("Qual o turno da materia?");
+        System.out.println("1- MANHÃ");
+        System.out.println("2- TARDE");
+        System.out.println("3- NOITE");
+    }
 }
