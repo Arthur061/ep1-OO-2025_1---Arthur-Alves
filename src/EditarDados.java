@@ -123,36 +123,10 @@ public class EditarDados extends DadosAlunosTXT {
 
         switch (i) {
             // EDITAR NOME
-            case 1 -> {
-                EditarDados EditarN = new EditarDados();
-                EditarN.EditarNome(matricula);
-            }
+            case 1 ->EditarNome(matricula);
 
             // EDITAR CURSO
-            case 2 -> {
-                System.out.println("Procurando pela matricula " + matricula + " na lista...");
-                buscarNome.BuscarDados(String.valueOf(matricula));
-
-                String novoCurso;
-                while(true) {
-                    System.out.println("O curso atual vinculado a sua matricula é "+buscarNome.getCursoVelho());
-                    try {
-                        System.out.print("\n Digite seu novo curso: ");
-                        novoCurso = sc.nextLine().trim();
-
-                        if (!novoCurso.matches("[a-zA-Z\\s]+")) { 
-                            System.out.println("Apenas letras, por favor.");
-                            continue;
-                        }
-                        break; //tchau loop
-                    }
-                    catch (Exception e) {
-                        System.out.println("Erro: " + e.getMessage());
-                    }
-                }
-                
-                editarDados(buscarNome.getMatriculaVelha(), "CURSO", novoCurso);
-            }
+            case 2 -> EditarCurso(matricula);
             }
         
         
@@ -165,31 +139,12 @@ public class EditarDados extends DadosAlunosTXT {
 
         System.out.println("Procurando pela matricula " + matricula + " na lista...");
         buscarNome.BuscarDados(String.valueOf(matricula));
+        String novoNome;
+        System.out.println("O nome atual vinculado a sua matricula é "+buscarNome.getNomeVelho());
+        novoNome = ValidarLetrasNum.lerTextoValido("Novo nome: ");
 
-                String novoNome;
-                while(true) {
-                    System.out.println("O nome atual vinculado a sua matricula é "+buscarNome.getNomeVelho());
-                    try {
-                        System.out.print("\n Digite seu novo nome: ");
-                        novoNome = sc.nextLine().trim();
+        editarDados(buscarNome.getMatriculaVelha(), "NOME", novoNome.toUpperCase());
 
-                        if (!ehTextoValido(novoNome)) { //Não pode faltar né
-                            System.out.println("Apenas letras, por favor.");
-                            continue;
-                        }
-                        break; //tchau loop
-                    }
-                    catch (Exception e) {
-                        System.out.println("Erro: " + e.getMessage());
-                    }
-                }
-                editarDados(buscarNome.getMatriculaVelha(), "NOME", novoNome.toUpperCase());
-
-    }
-    
-    // PODE SER UTIL
-    private boolean ehTextoValido(String texto) {
-        return texto.matches("[a-zA-Z\\s]+");
     }
     
     // EDITAR CURSO
@@ -202,23 +157,9 @@ public class EditarDados extends DadosAlunosTXT {
 
         String novoCurso;
         String cursoVelho = buscarCurso.getCursoVelho();
-        while(true) {
-            System.out.println("O curso atual vinculado a sua matricula é "+cursoVelho);
-            try {
-                System.out.print("\n Digite seu novo curso: ");
-                novoCurso = sc.nextLine().trim();
-
-                if (!ehTextoValido(novoCurso)) { 
-                    System.out.println("Apenas letras, por favor.");
-                    continue;
-                }
-                break; //tchau loop
-            }
-            catch (Exception e) {
-                System.out.println("Erro: " + e.getMessage());
-            }
-        }
-        editarDados(buscarCurso.getMatriculaVelha(), "CURSO", novoCurso);
+        System.out.println("O curso atual vinculado à sua matrícula é " + cursoVelho);
+        novoCurso = ValidarLetrasNum.lerTextoValido("Digite seu novo curso: ");
+        editarDados(buscarCurso.getMatriculaVelha(), "CURSO", novoCurso.toUpperCase());
 
     }
 
