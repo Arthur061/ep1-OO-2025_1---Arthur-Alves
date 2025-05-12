@@ -14,7 +14,7 @@ public class DadosAlunosTXT  extends Aluno{
     boolean encontrou = false; String linha; String dado;
     
     //Variaveis para edição
-    private String matriculaVelha; private String nomeVelho; private String cursoVelho;
+    private String matriculaVelha; private String nomeVelho; private String cursoVelho; private String condicao;
 
     //CADASTRO ALUNO
     public static void salvarEmTxt(String caminhoArquivo, String matricula, String nome, String curso, boolean condicao) {
@@ -97,7 +97,10 @@ public class DadosAlunosTXT  extends Aluno{
                                 nomeVelho = l.substring(l.indexOf(":") + 1).trim();
                             } else if (l.trim().toUpperCase().startsWith("CURSO:")) {
                                 cursoVelho = l.substring(l.indexOf(":") + 1).trim();
-                            } if (matriculaVelha != null && nomeVelho != null && cursoVelho != null) { // TCHAU LOOP
+                            }else if (l.trim().toUpperCase().startsWith("ALUNO ESPECIAL:")) {
+                                condicao = l.substring(l.indexOf(":") + 1).trim();
+                            }
+                             if (matriculaVelha != null && nomeVelho != null && cursoVelho != null && condicao != null) { // TCHAU LOOP AMEM
                                 break;
                             }
                             
@@ -119,6 +122,7 @@ public class DadosAlunosTXT  extends Aluno{
 
 }
 
+
     // GET PARA EDITAR MATRICULA
     public String getMatriculaVelha() {
         return matriculaVelha;
@@ -132,6 +136,10 @@ public class DadosAlunosTXT  extends Aluno{
     // GET PARA EDITAR O CURSO
     public String getCursoVelho () {
         return cursoVelho;
+    }
+
+    public String getCondicao () {
+        return condicao;
     }
     
 }
