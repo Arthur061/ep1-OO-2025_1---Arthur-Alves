@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -118,21 +119,51 @@ public class Aluno extends Menu {
         System.out.print("Sua escolha: ");
         tipoAluno = sc.nextInt();
         if(tipoAluno == 1) {condicao = true;}
-        
-        DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao);
+
+        List<String> listaMaterias = new ArrayList<>();
+        String materias = "";
+        int qtdMaterias = ValidarLetrasNum.lerInteiro("Quantas materias você ja finalizou: ");
+        if (qtdMaterias == 0) {
+            listaMaterias.clear();
+        } else {
+            for (int i = 1; i <= qtdMaterias; i++) {
+                String materiaFinalizada = ValidarLetrasNum.lerTextoValido("Digite o nome da matéria " + i + ": ");
+                listaMaterias.add(materiaFinalizada.toUpperCase());
+            }
+            materias = String.join(", ", listaMaterias);
+        }
 
         switch (this.tipoAluno) {
             case 1 -> {
                 System.out.println("Aluno cadastrado!"); 
-                System.out.println("Você agora está cadastrado no sistema como um aluno especial!");
-                Aluno Voltando = new Aluno();
-                Voltando.aluno();}
-            case 2 -> {
-                System.out.println("Aluno cadastrado!"); 
-                System.out.println("Voltando para menu aluno");
-                Aluno Voltando = new Aluno();
-                Voltando.aluno();}
+                System.out.println("Você agora está cadastrado no sistema como um aluno especial!");}
+        
+            case 2 -> System.out.println("Aluno cadastrado!"); 
             }
+
+            List<String> materiaDoing = new ArrayList<>();
+            String doing = "";
+
+            int qtdMateriasFazendo = ValidarLetrasNum.lerInteiro("Quantas materias você está cursando: ");
+            while(true) {
+                if (qtdMateriasFazendo > 2) {
+                    System.out.println("Você está cadastrado como aluno especial. Maximo de duas materias cursando.");
+                    qtdMateriasFazendo = ValidarLetrasNum.lerInteiro("Quantas materias você está cursando: ");
+                } else if (qtdMaterias <= 2) {
+                    break;
+                }
+            }
+            if (qtdMateriasFazendo == 0) {
+                materiaDoing.clear();
+            } else {
+                for (int m = 1; m <= qtdMateriasFazendo; m ++) {
+                    String materiasCursando = ValidarLetrasNum.lerTextoValido("Digite o nome da matéria " + m +": ");
+                    materiaDoing.add(materiasCursando.toUpperCase());
+                }
+                doing = String.join(", ", materiaDoing);
+            }
+            DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao, materias, doing);
+            aluno();
     }
 
     // LISTAR ALUNOS
