@@ -14,16 +14,27 @@ public class DadosAlunosTXT  extends Aluno{
     boolean encontrou = false; String linha; String dado;
     
     //Variaveis para edição
-    private String matriculaVelha; private String nomeVelho; private String cursoVelho; private String condicao;
+    private String matriculaVelha; private String nomeVelho; private String cursoVelho; private String condicao; private String materiasCursando;
+    
+    private List<String> materiasFinalizadas = new ArrayList<>();
+
+    public List<String> getMateriasFinalizadas() {
+        return materiasFinalizadas;
+    }
+
+
 
     //CADASTRO ALUNO
-    public static void salvarEmTxt(String caminhoArquivo, String matricula, String nome, String curso, boolean condicao) {
+    public static void salvarEmTxt(String caminhoArquivo, String matricula, String nome, String curso, boolean condicao, String materiasDone,
+     String materiasCursando ) {
         String dadosAluno = String.join("\n", 
         "---------------------",
         "ALUNO ESPECIAL: " + (condicao ? "SIM" : "NÃO"),
         "MATRICULA: " + matricula,
         "NOME: " + nome,
         "CURSO: " + curso,
+        "MATERIAS FINALIZADAS: " + materiasDone,
+        "MATERIAS CURSANDO: " + materiasCursando,
         "---------------------");
 
          try {
@@ -77,6 +88,8 @@ public class DadosAlunosTXT  extends Aluno{
 
     //Buscar Dados
     public void BuscarDados(String dado) {
+        
+        materiasFinalizadas.clear();
         matriculaVelha = null;
         nomeVelho = null;
         cursoVelho = null;
@@ -93,14 +106,28 @@ public class DadosAlunosTXT  extends Aluno{
                         for (String l : linhas) {
                             if (l.trim().toUpperCase().startsWith("MATRICULA:")) {
                                 matriculaVelha = l.substring(l.indexOf(":") + 1).trim();
-                            } else if (l.trim().toUpperCase().startsWith("NOME:")) {
+                            } 
+                            else if (l.trim().toUpperCase().startsWith("NOME:")) {
                                 nomeVelho = l.substring(l.indexOf(":") + 1).trim();
-                            } else if (l.trim().toUpperCase().startsWith("CURSO:")) {
+                            } 
+                            else if (l.trim().toUpperCase().startsWith("CURSO:")) {
                                 cursoVelho = l.substring(l.indexOf(":") + 1).trim();
-                            }else if (l.trim().toUpperCase().startsWith("ALUNO ESPECIAL:")) {
-                                condicao = l.substring(l.indexOf(":") + 1).trim();
                             }
-                             if (matriculaVelha != null && nomeVelho != null && cursoVelho != null && condicao != null) { // TCHAU LOOP AMEM
+                            else if (l.trim().toUpperCase().startsWith("ALUNO ESPECIAL:")) {
+                                condicao = l.substring(l.indexOf(":") + 1).trim();
+                            } 
+                            else if (l.trim().toUpperCase().startsWith("MATERIAS CURSANDO:")) {
+                                materiasCursando = l.substring(l.indexOf(":") + 1).trim();
+                            }
+                            else if (l.toUpperCase().startsWith("MATERIAS FINALIZADAS:")) {
+                                String materias = l.substring(l.indexOf(":") + 1).trim();
+                                String[] materiasArray = materias.split(",");
+                                for (String materia : materiasArray) {
+                                    materiasFinalizadas.add(materia.trim());
+                                }
+                            }
+
+                             if (matriculaVelha != null && nomeVelho != null && cursoVelho != null && condicao != null && !materiasFinalizadas.isEmpty()) { // TCHAU LOOP AMEM
                                 break;
                             }
                             
@@ -137,9 +164,13 @@ public class DadosAlunosTXT  extends Aluno{
     public String getCursoVelho () {
         return cursoVelho;
     }
-
+    
     public String getCondicao () {
         return condicao;
+    }
+
+    public String getMateriasCursando () {
+        return materiasCursando;
     }
     
 }

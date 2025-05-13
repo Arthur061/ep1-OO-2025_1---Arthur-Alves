@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 public class DadosTurmasTXT {
 
@@ -40,8 +41,8 @@ public class DadosTurmasTXT {
      }
 
     // MATRICULAR ALUNO
-    public static void MatriculaTXT (String caminhoArquivo, String nome, int matricula, String curso, String condicao,
-    String disciplina, String professor, String turno, int horario, String avaliacao, String materiasDone, int alunosMatriculados, int capacidade) {
+    public static void MatriculaTXT (String caminhoArquivo, String nome, String matricula, String curso, String condicao, String materiasDone,
+    String disciplina, int capacidade, String professor, String turno, String horario, String avaliacao) {
         String dadosMatricula = String.join("\n",
         "---------------------",
         "NOME ALUNO: " + nome,
@@ -50,8 +51,8 @@ public class DadosTurmasTXT {
         "ALUNO ESPECIAL: " + condicao,
         "MATERIAS FINALIZADAS: "+ materiasDone,
         "",
-        "NOME DISCIPLINA: "+ disciplina,
-        "CAPACIDADE MAXIMA: "+ capacidade,
+        "DISCIPLINAS CURSANDO: "+ disciplina,
+        "CAPACIDADE: 0/"+ capacidade,
         "NOME PROFESSOR: " + professor,
         "TURNO: "+ turno,
         "HORARIO: "+ horario,
@@ -73,5 +74,42 @@ public class DadosTurmasTXT {
 
     }
      
+    // GARANTIR QUE HAJA CAPACIDADE
+    public static boolean atualizarCapacidade(String caminhoArquivo, String nomeDisciplina) {
+    try {
+        List<String> linhas = Files.readAllLines(Paths.get(caminhoArquivo));
+        for (int i = 0; i < linhas.size(); i++) {
+            if (linhas.get(i).equalsIgnoreCase("NOME DA DISCIPLINA: " + nomeDisciplina)) {
+                // Avança até encontrar a linha de capacidade (geralmente 2 linhas depois)
+                for (int j = i; j < linhas.size(); j++) {
+                    if (linhas.get(j).startsWith("CAPACIDADE:")) {
+                        String[] partes = linhas.get(j).substring(11).split("/");
+                        int atuais = Integer.parseInt(partes[0].trim());
+                        int max = Integer.parseInt(partes[1].trim());
+
+                        if (atuais >= max) {
+                            System.out.println("Não há vagas disponíveis nesta disciplina.");
+                            return false;
+                        }
+
+                        atuais++; // Incrementa matriculados
+                        linhas.set(j, "CAPACIDADE: " + atuais + "/" + max);
+
+                        // Salva o arquivo atualizado
+                        Files.write(Paths.get(caminhoArquivo), linhas);
+                        System.out.println("Matrícula realizada com sucesso! (" + atuais + "/" + max + " alunos)");
+                        return true;
+                    }
+                }
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Erro ao atualizar capacidade: " + e.getMessage());
+    }
+
+    System.out.println("Disciplina não encontrada.");
+    return false;
+}
+
 }
 
