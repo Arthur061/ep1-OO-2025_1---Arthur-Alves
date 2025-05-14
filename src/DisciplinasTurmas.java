@@ -12,13 +12,6 @@ import java.util.Set;
 public class DisciplinasTurmas extends Aluno  {
     private static Scanner sc = new Scanner(System.in);
 
-    private String nomeDisciplina;
-    private String nomeProfessor;
-    private int capacidade;
-    private String turno;
-    private String horario;
-    private String avaliacao;
-
     private static String preRequisito; private static int reqCont;
     public int getReqCont () {
         return reqCont;
@@ -27,7 +20,7 @@ public class DisciplinasTurmas extends Aluno  {
         return preRequisito;
     }
 
-    private static Set<String> listaDePreRequisitos = new HashSet<>();
+    private static final Set<String> listaDePreRequisitos = new HashSet<>();
     public Set<String> getListaDePreRequisitos() {
         return listaDePreRequisitos;
     }
@@ -107,7 +100,7 @@ public class DisciplinasTurmas extends Aluno  {
 
                 int matriculaEstudante = sc.nextInt();
                 DadosAlunosTXT buscarInfo = new DadosAlunosTXT();
-                buscarInfo.BuscarDados(String.valueOf(matriculaEstudante));
+                buscarInfo.BuscarDados("alunos.txt",String.valueOf(matriculaEstudante), null);
                 String nomeEstudante = buscarInfo.getNomeVelho();
 
 
@@ -122,7 +115,9 @@ public class DisciplinasTurmas extends Aluno  {
 
     // SE MATRICULAR EM DISCIPLINAS
     public void matricularDisciplina() {
+        String profEscolhido = "";
         String materia; int matricula;
+        
 
         System.out.println("\nPartiu fazer as matriculas então!\n ");
         materia = ValidarLetrasNum.lerTextoValido("Primeiro, me deixe saber qual matéria você quer se matricular: ");
@@ -136,7 +131,7 @@ public class DisciplinasTurmas extends Aluno  {
             menuTurma.executar();
         }
         
-        buscarDisciplina("turmas.txt", materia);
+        buscarDisciplina("turmas.txt", materia, null);
 
         System.out.println("A materia "+materia.toUpperCase()+" tem "+getReqCont()
         +" pre-requisito(s)");
@@ -151,24 +146,10 @@ public class DisciplinasTurmas extends Aluno  {
 
         matricula = ValidarLetrasNum.lerInteiro("Me fala qual a sua matricula, por favor: ");
         DadosAlunosTXT buscarMatricula = new DadosAlunosTXT();
-        buscarMatricula.BuscarDados(String.valueOf(matricula));
-
-        // GET PARA FAZER A MATRICULA NO TXT
-        String curso = buscarMatricula.getCursoVelho();
-        String dadoMatricula = buscarMatricula.getMatriculaVelha();
-        String nome = buscarMatricula.getNomeVelho();
-        String condicao = buscarMatricula.getCondicao();
-        String materiasCursando = buscarMatricula.getMateriasCursando();
-        int capacidadeMax = getCapacidade();
-        String nomeProf = getNomeProfessor();
-        String turno = getTurno();
-        String horario = getHorario();
-        String avaliacao = getAvaliacao();
+        buscarMatricula.BuscarDados("alunos.txt",String.valueOf(matricula), null);
 
         // GUARDAR MATERIAS FEITAS PELO GUERREIRO
-        DadosAlunosTXT aluno = new DadosAlunosTXT();
-        aluno.BuscarDados(String.valueOf(matricula));
-        List<String> materias = aluno.getMateriasFinalizadas();
+        List<String> materias = buscarMatricula.getMateriasFinalizadas();
         if (materias == null  || materias.isEmpty()) {
             System.out.println("Não há materia finalizadas ainda.");
         }else {
@@ -179,22 +160,40 @@ public class DisciplinasTurmas extends Aluno  {
         }
         String materiasDone = String.join(", ", materias);
 
+
         // VERIFICAR PRE REQUISITO
         boolean possuiTodos = true;
         for (String req : lista) {
             if (!materias.contains(req.toUpperCase())) {
                 possuiTodos = false;
                 System.out.println("Você NÃO possui o pre-requisito: " + req);
+                System.out.println("Não será possivel se matricula em "+materia);
+                MenuOptions voltando = new MenuTurma();
+                voltando.executar();
             } else {
                 System.out.println("Você possui o pre-requisito: " + req);
             }
         }
-
         if (possuiTodos) {
             System.out.println(" Todos os pre-requisitos foram cumpridos. Você pode se matricular!");
-        } else {
-            System.out.println(" Você não cumpre todos os pre-requisitos.");
+            profEscolhido = ValidarLetrasNum.lerTextoValido("Qual professor você escolhe para a materia de "+materia.toUpperCase()+":");
         }
+        DadosAlunosTXT buscarprofessor = new DadosAlunosTXT();
+        buscarprofessor.BuscarDados("turmas.txt", profEscolhido, materia);
+        // GET PARA FAZER A MATRICULA NO TXT
+        String nomeEstudante = buscarMatricula.getNomeVelho();
+        String curso = buscarMatricula.getCursoVelho();
+        String dadoMatricula = buscarMatricula.getMatriculaVelha();
+        String nome = buscarMatricula.getNomeVelho();
+        String condicao = buscarMatricula.getCondicao();
+        List<String> materiasCursando = buscarMatricula.getMateriasCursando();
+        String ParametroCursando = String.valueOf(materiasCursando);
+
+        //String turnoMateria = String.valueOf(buscarprofessor.getTurnosList());
+       // String horarioMateria = String.valueOf(buscarprofessor.getHorariosList());
+       // String avaliacaoMateria = String.valueOf(buscarprofessor.getAvaliacaoList());
+        System.out.println(buscarprofessor.getTurnosList()); System.out.println(buscarprofessor.getHorariosList()); System.out.println(buscarprofessor.getAvaliacaoList());
+
 
         // CONDIÇÃO PARA FAZER AS MATRICULAS
         boolean condicaoAluno;
@@ -202,10 +201,16 @@ public class DisciplinasTurmas extends Aluno  {
             case "SIM" -> {
                 System.out.println("Sua condição atual é de estudante especial. Vamos prosseguir com a matricula!");
                 condicaoAluno = true;
+                if (materiasCursando.size() == 2) {
+                    System.out.println("Você já está cursando o número maximo de materia!");
+                    MenuOptions voltando = new MenuTurma();
+                    voltando.executar();
+                }
                 while (condicaoAluno) {
                     int numDisciplinas = ValidarLetrasNum.lerInteiro("Quantas materias você quer matricular: ");
                     if (numDisciplinas > 2) {
                         System.out.println("Você pode se matricular em no maximo 2 disciplinas!");
+                        System.out.println("Você atualmente está matriculado em "+materiasCursando.size()+" materia(s).");
                     } else {
                         break;
                     }
@@ -214,10 +219,16 @@ public class DisciplinasTurmas extends Aluno  {
             case "NÃO" -> {
                 System.out.println("Vamos prosseguir com a matricula normalmente!");
                 condicaoAluno = false;
+                if(materiasCursando.size() == 5) {
+                    System.out.println("Você já está cursando o número maximo de materia!");
+                    MenuOptions voltando = new MenuTurma();
+                    voltando.executar();
+                }
                 while (!condicaoAluno) {
                     int numDisciplinas = ValidarLetrasNum.lerInteiro("Quantas materias você quer matricular: ");
                     if (numDisciplinas > 5) {
                         System.out.println("Você pode se matricular em no maximo 5 disciplinas!");
+                        System.out.println("Você atualmente está matriculado em "+materiasCursando.size()+" materia(s).");
                     } else {
                         break;
                     }
@@ -225,8 +236,14 @@ public class DisciplinasTurmas extends Aluno  {
             }
         }
 
-        //// PROBLEMA ATUAL: ESTA DANDO NULL PQ O CAMARADA TEM QUE ESCOLHER QUAL DISCIPLINA ELE VAI CURSAR, RESOLVER AMANHÃ.
-        DadosTurmasTXT.MatriculaTXT("AlunoTurma.txt", nome, dadoMatricula, curso, condicao, materiasDone, materiasCursando, capacidadeMax, nomeProf, turno, horario, avaliacao);
+        EditarDados editarTurmas = new EditarDados();
+        editarTurmas.adicionarNovasInfosAoAluno("alunos.txt", nomeEstudante.toUpperCase(), materia.toUpperCase(), profEscolhido.toUpperCase(),
+        buscarprofessor.getTurnosList(), buscarprofessor.getHorariosList(), buscarprofessor.getAvaliacaoList());
+        
+
+
+
+        
     }
 
     // CADASTRAR NOVAS DISCIPLINAS
@@ -376,7 +393,7 @@ public class DisciplinasTurmas extends Aluno  {
     }
 
 
-    // VERIFICAR SE O ARQUIVO ESTA VAZIIII
+    // VERIFICAR SE O ARQUIVO ESTA VAZIIII CHECK
     public static boolean estaVazio(String caminhoArquivo) {
         boolean arquivoVazio = true; 
 
@@ -403,8 +420,8 @@ public class DisciplinasTurmas extends Aluno  {
     
 
 
-    // BUSCAR DISCIPLINA
-    public static void buscarDisciplina(String caminhoArquivo, String nomeDisciplinaBuscada) {
+    // BUSCAR DISCIPLINA CHECK
+    public static void buscarDisciplina(String caminhoArquivo, String nomeDisciplinaBuscada, String nomeProfessorBuscado) {
         int contador = 0;
         reqCont = 0;
         boolean encontrada = false;
@@ -412,38 +429,18 @@ public class DisciplinasTurmas extends Aluno  {
         listaDePreRequisitos.clear();
 
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
+            DisciplinasTurmas disciplina = new DisciplinasTurmas();
             String linha;
             List<String> bloco = new ArrayList<>();
     
             while ((linha = br.readLine()) != null) {
                 if (linha.contains("---------------------")) {
                     if (!bloco.isEmpty()) {
-                        String nomeDisciplina = "";
-                        String nomeProfessor = "";
-                        int capacidade = 0;
-                        String turno = "";
-                        String horario = "";
-                        String avaliacao = "";
+
                         for (String l : bloco) {
                             if (l.toUpperCase().contains("NOME DA DISCIPLINA: " + nomeDisciplinaBuscada.toUpperCase())) {
                                 encontrada = true;
                                 contador++;
-
-                                // GUARDAR OS NOMES NOS GET
-                                if (l.toUpperCase().startsWith("NOME PROFESSOR: ")) {
-                                    nomeProfessor = l.substring(l.indexOf(":") + 1).trim();
-                                } else if (l.toUpperCase().startsWith("NOME DA DISCIPLINA: ")) {
-                                    nomeDisciplina = l.substring(l.indexOf(":") + 1).trim();
-                                } else if (l.toUpperCase().startsWith("CAPACIDADE: ")) {
-                                    capacidade = Integer.parseInt(l.substring(l.indexOf(":") + 1).trim());
-                                } else if (l.toUpperCase().startsWith("TURNO DA DISCIPLINA: ")) {
-                                    turno = l.substring(l.indexOf(":") + 1).trim();
-                                } else if (l.toUpperCase().startsWith("HORARIO: ")) {
-                                    horario = l.substring(l.indexOf(":") + 1).trim();
-                                } else if (l.toUpperCase().startsWith("AVALIAÇÃO: ")) {
-                                    avaliacao = l.substring(l.indexOf(":") + 1).trim();
-                                }
-                        
 
                                 for (String info : bloco) {
                                     System.out.println(info);
@@ -479,38 +476,6 @@ public class DisciplinasTurmas extends Aluno  {
     }
     
 
-    // PEGAR DADOS DA MATERIA
-    public void Disciplina(String nomeDisciplina, String nomeProfessor, int capacidade,
-                      String turno, String horario, String avaliacao) {
-        this.nomeDisciplina = nomeDisciplina;
-        this.nomeProfessor = nomeProfessor;
-        this.capacidade = capacidade;
-        this.turno = turno;
-        this.horario = horario;
-        this.avaliacao = avaliacao;
-    }
-
-    public String getNomeDisciplina() {
-        return nomeDisciplina;
-    }
-
-    public String getNomeProfessor() {
-        return nomeProfessor;
-    }
-
-    public int getCapacidade() {
-        return capacidade;
-    }
-
-    public String getTurno() {
-        return turno;
-    }
-
-    public String getHorario() {
-        return horario;
-    }
-
-    public String getAvaliacao() {
-        return avaliacao;
-    }
 }
+
+

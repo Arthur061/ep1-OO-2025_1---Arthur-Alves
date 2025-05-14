@@ -42,8 +42,6 @@ public class Menu {
         if (acao != null) {
             acao.executar();
         }
-
-        sc.close();
-
     }
+
 }

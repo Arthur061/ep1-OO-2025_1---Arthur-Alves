@@ -19,7 +19,7 @@ public class DadosTurmasTXT {
         "PRÉ-REQUISITO: "+ preReq,
         "CAPACIDADE: "+ capacidade,
         "AVALIAÇÃO: "+ avaliacao,
-        "TURNO DA DISCIPLINA: "+ turno,
+        "TURNO: "+ turno,
         "MODO: "+ modo,
         "SALA: "+ sala,
         "HORARIO: "+ horarioI+"h até "+horarioF+"h",
@@ -42,7 +42,7 @@ public class DadosTurmasTXT {
 
     // MATRICULAR ALUNO
     public static void MatriculaTXT (String caminhoArquivo, String nome, String matricula, String curso, String condicao, String materiasDone,
-    String disciplina, int capacidade, String professor, String turno, String horario, String avaliacao) {
+    String disciplina, String professor, String turno, String horario, String avaliacao) {
         String dadosMatricula = String.join("\n",
         "---------------------",
         "NOME ALUNO: " + nome,
@@ -52,7 +52,6 @@ public class DadosTurmasTXT {
         "MATERIAS FINALIZADAS: "+ materiasDone,
         "",
         "DISCIPLINAS CURSANDO: "+ disciplina,
-        "CAPACIDADE: 0/"+ capacidade,
         "NOME PROFESSOR: " + professor,
         "TURNO: "+ turno,
         "HORARIO: "+ horario,

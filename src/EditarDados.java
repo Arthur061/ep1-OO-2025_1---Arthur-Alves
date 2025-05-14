@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
  import java.nio.charset.StandardCharsets;
  import java.nio.file.Files;
@@ -42,7 +47,7 @@ public class EditarDados extends DadosAlunosTXT {
                 ? " Dados atualizados com sucesso!" 
                 : " Campo não encontrado para o aluno.");
                 System.out.println("\n Dados atuais do aluno: ");
-                BuscarDados(novoValor);
+                BuscarDados("alunos.txt",novoValor, null);
 
         } else {
             System.out.println(" Aluno '" + parametroBuscar + "' não encontrado.");
@@ -119,7 +124,7 @@ public class EditarDados extends DadosAlunosTXT {
     // SAIDAS PARA A EDIÇÃO
     public void dado(int i, int matricula) {
         DadosAlunosTXT buscarNome = new DadosAlunosTXT();
-        buscarNome.BuscarDados(String.valueOf(matricula));
+        buscarNome.BuscarDados("alunos.txt",String.valueOf(matricula), null);
 
         switch (i) {
             // EDITAR NOME
@@ -135,10 +140,10 @@ public class EditarDados extends DadosAlunosTXT {
     // EDITAR NOME
     public void EditarNome (int matricula) {
         DadosAlunosTXT buscarNome = new DadosAlunosTXT();
-        buscarNome.BuscarDados(String.valueOf(matricula));
+        buscarNome.BuscarDados("alunos.txt",String.valueOf(matricula), null);
 
         System.out.println("Procurando pela matricula " + matricula + " na lista...");
-        buscarNome.BuscarDados(String.valueOf(matricula));
+        buscarNome.BuscarDados("alunos.txt",String.valueOf(matricula), null);
         String novoNome;
         System.out.println("O nome atual vinculado a sua matricula é "+buscarNome.getNomeVelho());
         novoNome = ValidarLetrasNum.lerTextoValido("Novo nome: ");
@@ -150,10 +155,10 @@ public class EditarDados extends DadosAlunosTXT {
     // EDITAR CURSO
     public void EditarCurso (int matricula) {
         DadosAlunosTXT buscarCurso = new DadosAlunosTXT();
-        buscarCurso.BuscarDados(String.valueOf(matricula));
+        buscarCurso.BuscarDados("alunos.txt",String.valueOf(matricula),null);
 
         System.out.println("Procurando pela matricula " + matricula + " na lista...");
-        buscarCurso.BuscarDados(String.valueOf(matricula));
+        buscarCurso.BuscarDados("alunos.txt",String.valueOf(matricula),null);
 
         String novoCurso;
         String cursoVelho = buscarCurso.getCursoVelho();
@@ -161,6 +166,104 @@ public class EditarDados extends DadosAlunosTXT {
         novoCurso = ValidarLetrasNum.lerTextoValido("Digite seu novo curso: ");
         editarDados(buscarCurso.getMatriculaVelha(), "CURSO", novoCurso.toUpperCase());
 
+    }
+
+    public void adicionarNovasInfosAoAluno(String caminhoArquivo, String nomeAluno, String novaMateria, String novoProfessor,
+                                       List<String> novosTurnos, List<String> novosHorarios, List<String> novasAvaliacoes) {
+        try {
+            File arquivo = new File(caminhoArquivo);
+            BufferedReader br = new BufferedReader(new FileReader(arquivo));
+            StringBuilder novoConteudo = new StringBuilder();
+
+            String linha;
+            boolean dentroBloco = false;
+            boolean alunoAlvo = false;
+            StringBuilder blocoAtual = new StringBuilder();
+
+            while ((linha = br.readLine()) != null) {
+                if (linha.startsWith("---------------------")) {
+                    if (alunoAlvo) {
+                        // Atualiza o bloco atual com os novos dados
+                        String blocoAtualizado = acrescentarDadosNoBloco(blocoAtual.toString(), novaMateria, novoProfessor, novosTurnos, novosHorarios, novasAvaliacoes);
+                        novoConteudo.append(blocoAtualizado);
+                    } else {
+                        novoConteudo.append(blocoAtual.toString());
+                    }
+                    blocoAtual.setLength(0);
+                    blocoAtual.append(linha).append("\n");
+                    dentroBloco = true;
+                    alunoAlvo = false;
+                } else {
+                    if (dentroBloco) {
+                        blocoAtual.append(linha).append("\n");
+                        if (linha.toUpperCase().contains("NOME:") && linha.toUpperCase().contains(nomeAluno.toUpperCase())) {
+                            alunoAlvo = true;
+                        }
+                    } else {
+                        novoConteudo.append(linha).append("\n");
+                    }
+                }
+            }
+
+            // Último bloco
+            if (alunoAlvo) {
+                String blocoAtualizado = acrescentarDadosNoBloco(blocoAtual.toString(), novaMateria, novoProfessor, novosTurnos, novosHorarios, novasAvaliacoes);
+                novoConteudo.append(blocoAtualizado);
+            } else {
+                novoConteudo.append(blocoAtual.toString());
+            }
+
+            br.close();
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+            bw.write(novoConteudo.toString());
+            bw.close();
+
+            System.out.println("Novas informações adicionadas com sucesso!");
+
+        } catch (IOException e) {
+            System.out.println("Erro: " + e.getMessage());
+        }  
+    }
+
+    private String acrescentarDadosNoBloco(String bloco, String novaMateria, String novoProfessor,
+                                       List<String> novosTurnos, List<String> novosHorarios, List<String> novasAvaliacoes) {
+    String[] linhas = bloco.split("\n");
+    String materias = "";
+    String professores = "";
+    String turnos = "";
+    String horarios = "";
+    String avaliacoes = "";
+
+    StringBuilder blocoFinal = new StringBuilder();
+
+    for (String linha : linhas) {
+        if (linha.toUpperCase().startsWith("MATERIAS CURSANDO:")) {
+            materias = linha.substring(linha.indexOf(":") + 1).trim();
+            materias += ", " + novaMateria;
+            blocoFinal.append("MATERIAS CURSANDO: ").append(materias).append("\n");
+        } else if (linha.toUpperCase().startsWith("NOME PROFESSOR:")) {
+            professores = linha.substring(linha.indexOf(":") + 1).trim();
+            professores += ", " + novoProfessor;
+            blocoFinal.append("NOME PROFESSOR: ").append(professores).append("\n");
+        } else if (linha.toUpperCase().startsWith("TURNO:")) {
+            turnos = linha.substring(linha.indexOf(":") + 1).trim();
+            turnos += ", " + String.join(", ", novosTurnos);
+            blocoFinal.append("TURNO: ").append(turnos).append("\n");
+        } else if (linha.toUpperCase().startsWith("HORARIO:")) {
+            horarios = linha.substring(linha.indexOf(":") + 1).trim();
+            horarios += ", " + String.join(", ", novosHorarios);
+            blocoFinal.append("HORARIO: ").append(horarios).append("\n");
+        } else if (linha.toUpperCase().startsWith("TIPO AVALIAÇÃO:")) {
+            avaliacoes = linha.substring(linha.indexOf(":") + 1).trim();
+            avaliacoes += ", " + String.join(", ", novasAvaliacoes);
+            blocoFinal.append("TIPO AVALIAÇÃO: ").append(avaliacoes).append("\n");
+        } else {
+            blocoFinal.append(linha).append("\n");
+        }
+    }
+
+    return blocoFinal.toString();
     }
 
 }
