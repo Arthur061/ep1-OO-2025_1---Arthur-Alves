@@ -8,8 +8,8 @@ public class Aluno extends Menu {
 
     Scanner sc = new Scanner(System.in);
     public void aluno() {
-        IntroduçãoFront menuAluno = new IntroduçãoFront();
-        menuAluno.MenuAluno();
+        IntroduçãoFront front = new IntroduçãoFront();
+        front.MenuAluno();
         opcao = sc.nextInt();
 
         // EXECUÇÃO DAS OPÇÕES 
@@ -37,13 +37,13 @@ public class Aluno extends Menu {
                     System.out.println("Lista atualmente está vazia :(");
                     MenuOptions menu = new MenuAluno();
                     menu.executar();
+                    
 
                 }else{
                         System.out.println("Vamos editar as informações desejadas!");
                     }
 
-                IntroduçãoFront edicao = new IntroduçãoFront();
-                edicao.EdicaoAluno();
+                front.EdicaoAluno();
                 int opcaoEditar = sc.nextInt();
                 sc.nextLine();
 
@@ -116,9 +116,14 @@ public class Aluno extends Menu {
         System.out.println("\nQual sua condição de aluno? ");
         System.out.println("1- Sou aluno especial");
         System.out.println("2- Sou aluno normal");
-        System.out.print("Sua escolha: ");
-        tipoAluno = sc.nextInt();
-        if(tipoAluno == 1) {condicao = true;}
+        tipoAluno = ValidarLetrasNum.lerInteiro("Sua escolha: ");
+        if (tipoAluno == 1) {
+            condicao = true;
+        } else if (tipoAluno == 2) {
+            condicao = false;
+        }
+        
+    
 
         List<String> listaMaterias = new ArrayList<>();
         String materias = "";
@@ -142,14 +147,21 @@ public class Aluno extends Menu {
             }
 
             List<String> materiaDoing = new ArrayList<>();
-            String doing = "";
+            List<String> nomesProfessores = new ArrayList<>();
+            List<String> turnoProfessores = new ArrayList<>();
+            List<String> horaioAulas = new ArrayList<>();
+            List<String> metodoAvaliacao = new ArrayList<>();
+            String doing = ""; String nomeProfs = ""; String turnoProfs = ""; String horarioProfs = ""; String metodoProfs = "";
 
             int qtdMateriasFazendo = ValidarLetrasNum.lerInteiro("Quantas materias você está cursando: ");
             while(true) {
-                if (qtdMateriasFazendo > 2) {
+                if (qtdMateriasFazendo > 2 && condicao) {
                     System.out.println("Você está cadastrado como aluno especial. Maximo de duas materias cursando.");
                     qtdMateriasFazendo = ValidarLetrasNum.lerInteiro("Quantas materias você está cursando: ");
-                } else if (qtdMaterias <= 2) {
+                } else if (qtdMateriasFazendo > 5 && !condicao) {
+                    System.out.println("Maximo de cinco materias cursando.");
+                    qtdMateriasFazendo = ValidarLetrasNum.lerInteiro("Quantas materias você está cursando: ");
+                } else {
                     break;
                 }
             }
@@ -158,11 +170,46 @@ public class Aluno extends Menu {
             } else {
                 for (int m = 1; m <= qtdMateriasFazendo; m ++) {
                     String materiasCursando = ValidarLetrasNum.lerTextoValido("Digite o nome da matéria " + m +": ");
+                    String nomeProfessor = ValidarLetrasNum.lerTextoValido("Digite o nome do professor de "+materiasCursando+":");
+                    String turnoProfessor = ValidarLetrasNum.lerTextoValido("Qual o turno (MANHÂ, TARDE OU NOITE): ");
+                    int horarioInicio = ValidarLetrasNum.lerInteiro("Horario de inicio: ");
+                    int horarioF = ValidarLetrasNum.lerInteiro("Horario de termino: ");
+
+
+                    IntroduçãoFront avaliacao = new IntroduçãoFront();
+                    avaliacao.metodoAva();
+                    String metodoAva = "";
+                    int escolhaAva = ValidarLetrasNum.lerInteiro("");
+                    OUTER:
+                    while (true) {
+                        switch (escolhaAva) {
+                            case 1 -> {
+                                metodoAva = "(P1 + P2 + P3 + L + S) / 5";
+                                break OUTER;
+                            }
+                            case 2 -> {
+                                metodoAva = "(P1 + P2 * 2 + P3 * 3 + L + S) / 8";
+                                break OUTER;
+                            }
+                            default -> { System.out.println("Escolha invalida!");
+                            escolhaAva = ValidarLetrasNum.lerInteiro("Escolha 1 ou 2: ");
+                            }
+                        }
+                    }
+
+                    metodoAvaliacao.add(metodoAva);
+                    nomesProfessores.add(nomeProfessor.toUpperCase());
+                    turnoProfessores.add(turnoProfessor.toUpperCase());
+                    horaioAulas.add(horarioInicio+"h até "+horarioF+"h");
                     materiaDoing.add(materiasCursando.toUpperCase());
                 }
                 doing = String.join(", ", materiaDoing);
+                nomeProfs = String.join(",", nomesProfessores);
+                turnoProfs = String.join(",", turnoProfessores);
+                horarioProfs = String.join(",", horaioAulas);
+                metodoProfs = String.join(",", metodoAvaliacao);
             }
-            DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao, materias, doing);
+            DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao, materias, doing, nomeProfs, turnoProfs, horarioProfs, metodoProfs);
             aluno();
     }
 
@@ -195,7 +242,7 @@ public class Aluno extends Menu {
 
         System.out.println("Procurando pelo nome " + dadoAluno.toUpperCase() + " na lista...");
         DadosAlunosTXT buscarMatricula = new DadosAlunosTXT();
-        buscarMatricula.BuscarDados(dadoAluno);
+        buscarMatricula.BuscarDados("alunos.txt",dadoAluno, null);
 
         // Validação da nova matrícula
 
