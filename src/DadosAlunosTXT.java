@@ -15,7 +15,7 @@ public class DadosAlunosTXT  extends Aluno{
     
     //Variaveis para edição
     private String matriculaVelha; private String nomeVelho; private String cursoVelho; private String condicao; private String materiasCursando;
-    private String nomesProfessores; private String turnosProfessores; private String horarioProfessores; private String avaProfessores;
+    private String semestreAtual; String professor;
     
     // LISTAS E GETTERS PARA MATRICULA
     private final List<String> materiasFinalizadas = new ArrayList<>();
@@ -23,6 +23,23 @@ public class DadosAlunosTXT  extends Aluno{
     private final List<String> turnosList = new ArrayList<>();
     private final List<String> avaliacaoList = new ArrayList<>();
     private final List<String> horariosList = new ArrayList<>();
+   private final List<String> nomesProfessores = new ArrayList<>();
+   // private final List<String> turnosProfessores = new ArrayList<>();
+   // private final List<String> horarioProfessores = new ArrayList<>();
+   // private final List<String> avaProfessores = new ArrayList<>();
+
+    public String getMatriculaVelha() {return matriculaVelha;}
+    public String getNomeVelho() {return nomeVelho;}
+    public String getSemestreAtual() {return semestreAtual;}
+    public String getCursoVelho () {return cursoVelho;}
+    public String getCondicao () {return condicao;}
+    public String getNomeProf() {return professor;}
+
+    public List<String> getNomesProfs () {return nomesProfessores;}
+   // public List<String> getTurnosProfs () {return turnosProfessores;}
+   // public List<String> getHorarioProfs () {return horarioProfessores;}   
+   // public List<String> geAvaProfs (){return avaProfessores; }
+   // public List<String> getMateriasFazendo() {return materiasFazendo;}
 
     public List<String> getTurnosList() {return turnosList;}
     public List<String> getAvaliacaoList() {return avaliacaoList;}
@@ -34,12 +51,13 @@ public class DadosAlunosTXT  extends Aluno{
 
     //CADASTRO ALUNO
     public static void salvarEmTxt(String caminhoArquivo, String matricula, String nome, String curso, boolean condicao, String materiasDone,
-     String materiasCursando, String nomeProf, String turnoProf, String horarioProf, String tipoAva ) {
+     String materiasCursando, String nomeProf, String turnoProf, String horarioProf, String tipoAva, String semestre) {
         String dadosAluno = String.join("\n", 
         "---------------------",
         "ALUNO ESPECIAL: " + (condicao ? "SIM" : "NÃO"),
         "MATRICULA: " + matricula,
         "NOME: " + nome,
+        "SEMESTRE: " + semestre,
         "CURSO: " + curso,
         "MATERIAS FINALIZADAS: " + materiasDone,
         "",
@@ -131,7 +149,10 @@ public class DadosAlunosTXT  extends Aluno{
                                 }
                                 else if (l.trim().toUpperCase().startsWith("ALUNO ESPECIAL:")) {
                                     condicao = l.substring(l.indexOf(":") + 1).trim();
-                                } 
+                                }
+                                else if (l.trim().toUpperCase().startsWith("SEMESTRE: ")) {
+                                    semestreAtual = l.substring(l.indexOf(":")+1).trim();
+                                }
                                 else if (l.trim().toUpperCase().startsWith("MATERIAS CURSANDO:")) {
                                     materiasCursando = l.substring(l.indexOf(":") + 1).trim();
                                     String[] cursandoArray = materiasCursando.split(",");
@@ -166,8 +187,10 @@ public class DadosAlunosTXT  extends Aluno{
                 avaliacaoList.clear();
                 turnosList.clear();
                 horariosList.clear();
+                nomesProfessores.clear();
 
                 String turno = null;
+                String nomeProf = null;
                 String horario = null;
                 String avaliacao = null;
 
@@ -178,7 +201,7 @@ public class DadosAlunosTXT  extends Aluno{
                 
                 while ((linha = br.readLine()) != null) {
                     if (linha.startsWith("---------------------")) {
-                        if (blocoProf.toString().toUpperCase().contains(dadoExtra.toUpperCase())) {
+                        if (blocoProf.toString().toLowerCase().contains(dado.toLowerCase())) {
                             encontrou = true;
                             System.out.println("\nProfessor encontrado:\n" + blocoProf.toString());
                                 
@@ -190,7 +213,14 @@ public class DadosAlunosTXT  extends Aluno{
                                     for(String t : turnoArray) {
                                         turnosList.add(t.trim());
                                     }
-                                } 
+                                }
+                                else if (l.trim().toUpperCase().startsWith("NOME PROFESSOR:")) {
+                                    professor = l.substring(l.indexOf(":") + 1).trim();
+                                    String[] nomeArray = nomeProf.split(",");
+                                    for(String t : nomeArray) {
+                                        nomesProfessores.add(t.trim());
+                                    }
+                                }
                                 else if (l.trim().toUpperCase().startsWith("HORARIO:")) {
                                     horario = l.substring(l.indexOf(":") + 1).trim();
                                     String[] horariosArray = horario.split(",");
@@ -198,7 +228,7 @@ public class DadosAlunosTXT  extends Aluno{
                                         horariosList.add(hora.trim());
                                     }
                                 }
-                                else if (l.trim().toUpperCase().startsWith("AVALIAÇÃO")) {
+                                else if (l.trim().toUpperCase().startsWith("TIPO AVALIAÇÃO:")) {
                                     avaliacao = l.substring(l.indexOf(":") + 1).trim();
                                     String[] avaliacosArray = avaliacao.split(",");
                                     for(String ava : avaliacosArray) {
@@ -206,7 +236,7 @@ public class DadosAlunosTXT  extends Aluno{
                                     }
                                 }
                                 if (turno != null && horario != null && avaliacao != null) {
-                                    System.out.println("AVALIACAO: "+avaliacaoList); System.out.println("HORARIO: "+horariosList); System.out.println("TURNO: "+turnosList);
+                                    System.out.println("TIPO AVALIAÇÃO: "+avaliacaoList); System.out.println("HORARIO: "+horariosList); System.out.println("TURNO: "+turnosList);
                                 }
                             }
                             break;
@@ -224,17 +254,5 @@ public class DadosAlunosTXT  extends Aluno{
             System.out.println("Erro ao ler o arquivo: " + e.getMessage());
         }
     }
-
-
-    public String getMatriculaVelha() {return matriculaVelha;}
-    public String getNomeVelho() {return nomeVelho;}
-
-    public String getCursoVelho () {return cursoVelho;}
-    public String getCondicao () {return condicao;}
-    public String getNomesProfs () {return nomesProfessores;}
-    public String getTurnosProfs () {return turnosProfessores;}
-    public String getHorarioProfs () {return horarioProfessores;}   
-    public String geAvaProfs (){return avaProfessores; }
-    public List<String> getMateriasFazendo() {return materiasFazendo;}
 } 
 

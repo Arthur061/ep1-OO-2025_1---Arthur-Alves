@@ -33,10 +33,11 @@ public class DisciplinasTurmas extends Aluno  {
         switch (escolha) {
 
             case 1 -> {
-                System.out.println("Ok, vamos para a parte de trancamento!");
+                System.out.println("Ok, vamos para a parte de trancamento/destrancamento!");
                 Trancamento();
             }
 
+            // APARETENMENTE CHECK
             case 2 -> {
                 System.out.println("Ok, vamos para a parte de matriculas!");
                 matricularDisciplina();
@@ -66,48 +67,55 @@ public class DisciplinasTurmas extends Aluno  {
         }
     }
 
-
+    // TRANCAMENTO
     public void Trancamento() {
         IntroduçãoFront opcoes = new IntroduçãoFront();
         opcoes.menuTrancamento();
+        DadosAlunosTXT procurar = new DadosAlunosTXT();
+        EditarDados novosDados = new EditarDados();
 
         int opcao = 0;
         boolean Entrada = false;
+        VerificadorMatricula verificandomat = new VerificadorMatricula();
 
         // You know why broda
-        while(!Entrada) {
-            System.out.print("Sua escolha: ");
+        int escolha = ValidarLetrasNum.lerInteiro("Sua escolha: ");
 
-            try {
-                opcao = sc.nextInt();
-                
-                if (opcao >= 1 && opcao <= 3) {
-                    Entrada = true; 
-                } else {
-                    System.out.println("Opção inválida! Por favor, escolha uma opção de 1 a 3.");
-                }
-            } catch (InputMismatchException e) { 
-                System.out.println("Isso não é um número válido. Tente novamente.");
-                sc.next(); 
-            }
-        }
-
-        switch (opcao) {
+        switch (escolha) {
             case 1 -> {
                 System.out.println("Vamos trancar o semestre então.");
                 System.out.println("Antes de começar o processo preciso que você me diga sua matricula.");
-                System.out.print("Matricula: ");
-
-                int matriculaEstudante = sc.nextInt();
-                DadosAlunosTXT buscarInfo = new DadosAlunosTXT();
-                buscarInfo.BuscarDados("alunos.txt",String.valueOf(matriculaEstudante), null);
-                String nomeEstudante = buscarInfo.getNomeVelho();
-
-
-
+                int matricula = verificandomat.verificarMatricula(-1);
+                
+                novosDados.trancarSemestre(matricula);
             }
             case 2 -> {
-                System.out.println("Vamos trancar a discplina então.");
+                System.out.println("Vamos trancar a matricula desejada.");
+                System.out.println("Antes de começar o processo preciso que você me diga sua matricula.");
+                int matricula = verificandomat.verificarMatricula(-1);
+                    
+                procurar.BuscarDados("alunos.txt", String.valueOf(matricula), null);
+                String materiaTrancar = ValidarLetrasNum.lerTextoValido("Qual materia você vai querer trancar: ");
+                EditarDados retirar = new EditarDados();
+                //EditarDados buscarMateria = new EditarDados();
+    
+                try {
+                    System.out.println(materiaTrancar);
+                    retirar.trancarDisciplina(materiaTrancar);
+                } catch (IOException e) {
+                    System.out.println("Erro ao tentar trancar disciplina: " + e.getMessage());
+                }
+                break;
+
+            }
+            case 3 -> {
+
+            }
+            case 4 -> {
+
+            }
+            default -> {
+                System.out.println("Opção invalida!");
             }
         }
 
@@ -123,7 +131,7 @@ public class DisciplinasTurmas extends Aluno  {
         materia = ValidarLetrasNum.lerTextoValido("Primeiro, me deixe saber qual matéria você quer se matricular: ");
 
         System.out.println("\nMatéria escolhida: " + materia.toUpperCase()+"\n"); // DEBUG PQ SLK NÃO DA
-
+ 
         boolean vazio = estaVazio(caminhoArquivo); 
         if (vazio) {
             System.out.println("Eita! parece que ainda não há turmas cadastradas...");
@@ -147,6 +155,11 @@ public class DisciplinasTurmas extends Aluno  {
         matricula = ValidarLetrasNum.lerInteiro("Me fala qual a sua matricula, por favor: ");
         DadosAlunosTXT buscarMatricula = new DadosAlunosTXT();
         buscarMatricula.BuscarDados("alunos.txt",String.valueOf(matricula), null);
+        if (buscarMatricula.getSemestreAtual().startsWith("TRANCADO")) {
+            System.out.println("Sua matricula atualmente está trancada! Volte após destranca-la.");
+            MenuOptions voltando = new MenuTurma();
+            voltando.executar();
+        }
 
         // GUARDAR MATERIAS FEITAS PELO GUERREIRO
         List<String> materias = buscarMatricula.getMateriasFinalizadas();
@@ -163,7 +176,11 @@ public class DisciplinasTurmas extends Aluno  {
 
         // VERIFICAR PRE REQUISITO
         boolean possuiTodos = true;
-        for (String req : lista) {
+        for (String req : lista ) {
+            if (req.trim().equalsIgnoreCase("NÃO POSSUI")) {
+                System.out.println("Disciplina não possui pré-requisito. Matrícula liberada.");
+                break;
+            }
             if (!materias.contains(req.toUpperCase())) {
                 possuiTodos = false;
                 System.out.println("Você NÃO possui o pre-requisito: " + req);
@@ -174,6 +191,7 @@ public class DisciplinasTurmas extends Aluno  {
                 System.out.println("Você possui o pre-requisito: " + req);
             }
         }
+        
         if (possuiTodos) {
             System.out.println(" Todos os pre-requisitos foram cumpridos. Você pode se matricular!");
             profEscolhido = ValidarLetrasNum.lerTextoValido("Qual professor você escolhe para a materia de "+materia.toUpperCase()+":");
@@ -189,9 +207,7 @@ public class DisciplinasTurmas extends Aluno  {
         List<String> materiasCursando = buscarMatricula.getMateriasCursando();
         String ParametroCursando = String.valueOf(materiasCursando);
 
-        //String turnoMateria = String.valueOf(buscarprofessor.getTurnosList());
-       // String horarioMateria = String.valueOf(buscarprofessor.getHorariosList());
-       // String avaliacaoMateria = String.valueOf(buscarprofessor.getAvaliacaoList());
+        
         System.out.println(buscarprofessor.getTurnosList()); System.out.println(buscarprofessor.getHorariosList()); System.out.println(buscarprofessor.getAvaliacaoList());
 
 
@@ -230,6 +246,7 @@ public class DisciplinasTurmas extends Aluno  {
                         System.out.println("Você pode se matricular em no maximo 5 disciplinas!");
                         System.out.println("Você atualmente está matriculado em "+materiasCursando.size()+" materia(s).");
                     } else {
+                        matricularDisciplina();
                         break;
                     }
                 }
@@ -239,10 +256,6 @@ public class DisciplinasTurmas extends Aluno  {
         EditarDados editarTurmas = new EditarDados();
         editarTurmas.adicionarNovasInfosAoAluno("alunos.txt", nomeEstudante.toUpperCase(), materia.toUpperCase(), profEscolhido.toUpperCase(),
         buscarprofessor.getTurnosList(), buscarprofessor.getHorariosList(), buscarprofessor.getAvaliacaoList());
-        
-
-
-
         
     }
 

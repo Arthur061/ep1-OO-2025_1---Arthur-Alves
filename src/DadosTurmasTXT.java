@@ -1,8 +1,12 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.List;
 
 public class DadosTurmasTXT {
 
@@ -17,7 +21,7 @@ public class DadosTurmasTXT {
         "CODIGO: " + codigo,
         "CARGA HORARIA: " + cargaH+"h",
         "PRÉ-REQUISITO: "+ preReq,
-        "CAPACIDADE: "+ capacidade,
+        "CAPACIDADE: 0/"+ capacidade,
         "AVALIAÇÃO: "+ avaliacao,
         "TURNO: "+ turno,
         "MODO: "+ modo,
@@ -74,41 +78,73 @@ public class DadosTurmasTXT {
     }
      
     // GARANTIR QUE HAJA CAPACIDADE
-    public static boolean atualizarCapacidade(String caminhoArquivo, String nomeDisciplina) {
-    try {
-        List<String> linhas = Files.readAllLines(Paths.get(caminhoArquivo));
-        for (int i = 0; i < linhas.size(); i++) {
-            if (linhas.get(i).equalsIgnoreCase("NOME DA DISCIPLINA: " + nomeDisciplina)) {
-                // Avança até encontrar a linha de capacidade (geralmente 2 linhas depois)
-                for (int j = i; j < linhas.size(); j++) {
-                    if (linhas.get(j).startsWith("CAPACIDADE:")) {
-                        String[] partes = linhas.get(j).substring(11).split("/");
-                        int atuais = Integer.parseInt(partes[0].trim());
-                        int max = Integer.parseInt(partes[1].trim());
+    public boolean atualizarCapacidade(String caminhoArquivo, String nomeDisciplina) {
+        try {
+            File arquivo = new File(caminhoArquivo);
+            BufferedReader br = new BufferedReader(new FileReader(arquivo));
+            StringBuilder novoConteudo = new StringBuilder();
 
-                        if (atuais >= max) {
-                            System.out.println("Não há vagas disponíveis nesta disciplina.");
+            String linha;
+            boolean dentroBloco = false;
+            boolean encontrouDisciplina = false;
+            boolean atualizouCapacidade = false;
+            StringBuilder blocoAtual = new StringBuilder();
+            
+            while ((linha = br.readLine()) != null) {
+                if (linha.startsWith("---------------------")) {
+                    if (dentroBloco) {
+                        novoConteudo.append(blocoAtual.toString());
+                    }
+
+                    blocoAtual.setLength(0);
+                    blocoAtual.append(linha).append("\n");
+                    dentroBloco = true;
+                    encontrouDisciplina = false;
+                } else if (dentroBloco) {
+                    blocoAtual.append(linha).append("\n");
+
+                    if (linha.toUpperCase().startsWith("NOME DA DISCIPLINA:") &&
+                        linha.toUpperCase().contains(nomeDisciplina.toUpperCase())) {
+                        encontrouDisciplina = true;
+                    }
+
+                    if (encontrouDisciplina && linha.toUpperCase().startsWith("CAPACIDADE:")) {
+                        int capacidade = Integer.parseInt(linha.replaceAll("[^0-9]", ""));
+                        if (capacidade > 0) {
+                            capacidade -= 1;
+                            atualizouCapacidade = true;
+
+                            int startIdx = blocoAtual.lastIndexOf(linha);
+                            blocoAtual.replace(startIdx, blocoAtual.length(), "CAPACIDADE: " + capacidade + "\n");
+                        } else {
+                            br.close();
                             return false;
                         }
-
-                        atuais++; // Incrementa matriculados
-                        linhas.set(j, "CAPACIDADE: " + atuais + "/" + max);
-
-                        // Salva o arquivo atualizado
-                        Files.write(Paths.get(caminhoArquivo), linhas);
-                        System.out.println("Matrícula realizada com sucesso! (" + atuais + "/" + max + " alunos)");
-                        return true;
                     }
+                } else {
+                    novoConteudo.append(linha).append("\n");
                 }
             }
+
+            if (blocoAtual.length() > 0) {
+                novoConteudo.append(blocoAtual.toString());
+            }
+
+            br.close();
+
+            if (atualizouCapacidade) {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+                bw.write(novoConteudo.toString());
+                bw.close();
+                System.out.println("Capacidade da disciplina '" + nomeDisciplina + "' atualizada.");
+            }
+
+            return atualizouCapacidade;
+
+        } catch (IOException e) {
+            System.out.println("Erro ao processar o arquivo de turmas: " + e.getMessage());
+            return false;
         }
-    } catch (IOException e) {
-        System.out.println("Erro ao atualizar capacidade: " + e.getMessage());
     }
-
-    System.out.println("Disciplina não encontrada.");
-    return false;
-}
-
 }
 

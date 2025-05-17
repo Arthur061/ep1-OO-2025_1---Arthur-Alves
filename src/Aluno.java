@@ -122,8 +122,7 @@ public class Aluno extends Menu {
         } else if (tipoAluno == 2) {
             condicao = false;
         }
-        
-    
+        int semestre = ValidarLetrasNum.lerInteiro("Qual seu semestre atual: ");
 
         List<String> listaMaterias = new ArrayList<>();
         String materias = "";
@@ -209,7 +208,8 @@ public class Aluno extends Menu {
                 horarioProfs = String.join(",", horaioAulas);
                 metodoProfs = String.join(",", metodoAvaliacao);
             }
-            DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao, materias, doing, nomeProfs, turnoProfs, horarioProfs, metodoProfs);
+            DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao, materias, doing, nomeProfs,
+             turnoProfs, horarioProfs, metodoProfs, String.valueOf(semestre));
             aluno();
     }
 

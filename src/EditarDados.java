@@ -28,14 +28,14 @@ public class EditarDados extends DadosAlunosTXT {
 
         for (String linha : linhas) {
             if (linha.startsWith("---------------------")) {
-                if (blocoAtual.length() > 0) { // caso exisat bloco (----)
+                if (blocoAtual.length() > 0) { 
                     ResultadoProcessamento resultado = processarBloco(blocoAtual, parametroBuscar, campo, novoValor); // MANDA PARA O ABATE
                     alunoEncontrado = alunoEncontrado || resultado.alunoEncontrado;
                     campoAlterado = campoAlterado || resultado.campoAlterado;
-                    novasLinhas.addAll(resultado.novasLinhas); // NÃO EXCLOI TODO O .TXT ;-;
+                    novasLinhas.addAll(resultado.novasLinhas);
                 }
-                    novasLinhas.add(linha); // Partir para prox bloco
-                    blocoAtual.setLength(0); // add separador
+                    novasLinhas.add(linha);
+                    blocoAtual.setLength(0); 
             } else {
                 blocoAtual.append(linha).append("\n");
             }
@@ -168,8 +168,101 @@ public class EditarDados extends DadosAlunosTXT {
 
     }
 
+    // TRANCAR SEMESTRE
+    public void trancarSemestre (int matricula) {
+        DadosAlunosTXT buscarSemestre = new DadosAlunosTXT();
+        System.out.println("Procurando pela matricula " + matricula + " na lista...");
+        buscarSemestre.BuscarDados("alunos.txt",String.valueOf(matricula),null);
+
+        String semestreAtual = buscarSemestre.getSemestreAtual();
+        System.out.println("Você está atualmente no "+semestreAtual+"º semestre.");
+        System.out.println("SEU SEMESTRE ESTÁ SENDO TRANCADO...");
+
+        editarDados(String.valueOf(matricula), "SEMESTRE", "TRANCADO");
+        editarDados(String.valueOf(matricula), "MATERIAS CURSANDO", "TRANCADO");
+        editarDados(String.valueOf(matricula), "NOME PROFESSOR", "");
+        editarDados(String.valueOf(matricula), "TURNO", "");
+        editarDados(String.valueOf(matricula), "HORARIO", "");
+        editarDados(String.valueOf(matricula), "TIPO AVALIAÇÃO", "");
+
+        System.out.println("SUA MATRICULA ESTÁ ATUALMENTE TRANCADA!");
+        BuscarDados("alunos.txt", String.valueOf(matricula), null);
+        
+    }
+
+    // TRANCAR DISCIPLINA
+    public void trancarDisciplina (String parametro) throws IOException {
+        DadosAlunosTXT buscarMateria = new DadosAlunosTXT();
+        System.out.println(parametro);
+
+        buscarMateria.BuscarDados("turmas.txt", parametro, null);
+        System.out.println("PROF: "+buscarMateria.getNomeProf());
+        String nomeProfessor = buscarMateria.getNomeProf();
+        System.out.println("Você irá trancar a seguinte materia: ");
+        System.out.println(nomeProfessor);
+        buscarMateria.BuscarDados("turmas.txt", nomeProfessor, null);
+
+        List<String> materia = buscarMateria.getMateriasCursando();
+        List<String> professor = buscarMateria.getNomesProfs();
+        List<String> turno = buscarMateria.getTurnosList();
+        List<String> horario = buscarMateria.getHorariosList();
+        List<String> avaliacao = buscarMateria.getAvaliacaoList();
+
+        List<String> linhas = Files.readAllLines(Paths.get("alunos.txt"));
+
+        int indice = -1;
+        for (int i = 0; i < professor.size(); i++) {
+            if (professor.get(i).equalsIgnoreCase(nomeProfessor.trim())) {
+                indice = i;
+                break;
+            }
+        }
+
+        if (indice == -1) {
+            System.out.println(" Professor '" + nomeProfessor + "' não encontrado entre as matérias cursando.");
+            return;
+        }
+        
+
+        materia.remove(indice);
+        professor.remove(indice);
+        turno.remove(indice);
+        horario.remove(indice);
+        avaliacao.remove(indice);
+
+        // REESCREVE OS DADOS SEM TUDO RELACIONADO AO PROF
+        for (int i = 0; i < linhas.size(); i++) {
+            String linha = linhas.get(i);
+            if (linha.startsWith("MATERIAS CURSANDO:")) {
+                linhas.set(i, "MATERIAS CURSANDO: " + String.join(", ", materia));
+            } else if (linha.startsWith("NOME PROFESSOR:")) {
+                linhas.set(i, "NOME PROFESSOR: " + String.join(", ", professor));
+            } else if (linha.startsWith("TURNO:")) {
+                linhas.set(i, "TURNO: " + String.join(", ", turno));
+            } else if (linha.startsWith("HORARIO:")) {
+                linhas.set(i, "HORARIO: " + String.join(", ", horario));
+            } else if (linha.startsWith("TIPO AVALIAÇÃO:")) {
+                linhas.set(i, "TIPO AVALIAÇÃO: " + String.join(", ", avaliacao));
+            }
+        }
+        Files.write(Paths.get("alunos.txt"), linhas);
+        System.out.println("Disciplina do professor " + nomeProfessor + " foi trancada com sucesso.");
+    }
+
+    // CADASTRO DE NOVAS TURMAS
     public void adicionarNovasInfosAoAluno(String caminhoArquivo, String nomeAluno, String novaMateria, String novoProfessor,
                                        List<String> novosTurnos, List<String> novosHorarios, List<String> novasAvaliacoes) {
+        
+        String caminhoTurmas = "turmas.txt";
+        DadosTurmasTXT atualizador = new DadosTurmasTXT();
+                                        
+        boolean returnAtualizador = atualizador.atualizarCapacidade(caminhoTurmas, novaMateria);
+                                        
+        if (!returnAtualizador) {
+            System.out.println("Não há mais vagas disponíveis para a disciplina: " + novaMateria);
+            return;
+        }
+                                        
         try {
             File arquivo = new File(caminhoArquivo);
             BufferedReader br = new BufferedReader(new FileReader(arquivo));

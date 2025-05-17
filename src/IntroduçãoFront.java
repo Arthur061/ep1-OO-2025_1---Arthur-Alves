@@ -47,8 +47,9 @@ public class IntroduçãoFront {
 
         System.out.println("\n Antes de tudo, me deixa saber qual o seu objetivo ");
         System.out.println("1- TRANCAR SEMESTRE");
-        System.out.println("2- TRANCAR MATRICULA");
-        System.out.println("3- VOLTAR MENU DE SERVIÇOS");
+        System.out.println("2- TRANCAR DISCIPLINA");
+        System.out.println("3- DESTRANCAR SEMESTRE");
+        System.out.println("4- VOLTAR MENU DE SERVIÇOS");
     }
 
     public void CadastroDisciplina () {
