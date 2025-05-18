@@ -1,6 +1,6 @@
 
 
-public class IntroduçãoFront {
+public class FrontSysout {
     public void MenuInicial() {
         System.out.println("---- - -- - -- - -- - -- - -- - ----");
         System.out.println("    BEM-VINDO AO SISTEMA DA FCTE    ");
@@ -91,13 +91,14 @@ public class IntroduçãoFront {
     }
     public void lancamentoAvaliacoes () {
         System.out.println("\n Estamos na aba de lançamentos!\n Oque você deseja?\n");
-        System.out.println("1- NOTAS");
-        System.out.println("2- FREQUÊNCIA");
-        System.out.println("3- VOLTAR MENU");
+        System.out.println("1- NOTAS / FREQUÊNCIA");
+        System.out.println("2- VOLTAR MENU");
     }
-    public void migrarLacamentos () {
-        System.out.println("Deseja ir para a aba de frequencias e finalizar o processo?");
-        System.out.println("1- SIM");
-        System.out.println("2- NÃO");
-    }
+    public void menuRelatorios() {
+        System.out.println("\n Estamos na aba de relatorios!\n Oque você deseja?\n");
+        System.out.println("1- RELATORIO POR TURMA");
+        System.out.println("2- RELATORIO POR DSICPLINA");
+        System.out.println("3- RELATORIO POR PROFESSOR");
+        System.out.println("4- VOLTAR MENU");
+    } 
 }

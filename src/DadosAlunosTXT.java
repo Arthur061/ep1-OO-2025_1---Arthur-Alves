@@ -16,6 +16,16 @@ public class DadosAlunosTXT  extends Aluno{
     //Variaveis para edição
     private String matriculaVelha; private String nomeVelho; private String cursoVelho; private String condicao; private String materiasCursando;
     private String semestreAtual; String professor;
+
+    String materiasFall = null;
+    String turno = null;
+    String nomeProf = null;
+    String horario = null;
+    String avaliacao = null;
+    String matriculados = null;
+    String materia = null;
+    String cargaH = null;
+
     
     // LISTAS E GETTERS PARA MATRICULA
     private final List<String> materiasFinalizadas = new ArrayList<>();
@@ -27,6 +37,8 @@ public class DadosAlunosTXT  extends Aluno{
     private final List<String> matriculadosList = new ArrayList<>();
     private final List<String> materiaList = new ArrayList<>();
     private final List<String> cargaHorariaList = new ArrayList<>();
+    private final List<String> mencaoFinaList = new ArrayList<>();
+    private final List<String> materiasReprovadasList = new ArrayList<>();
 
     public String getMatriculaVelha() {return matriculaVelha;}
     public String getNomeVelho() {return nomeVelho;}
@@ -35,6 +47,8 @@ public class DadosAlunosTXT  extends Aluno{
     public String getCondicao () {return condicao;}
     public String getNomeProf() {return professor;}
 
+    public List<String> getMateriasreprovadas() {return materiasReprovadasList;}
+    public List<String> getMencao() {return mencaoFinaList;}
     public List<String> getCargaH() {return cargaHorariaList;}
     public List<String> getmateriaProf() {return materiaList;}
     public List<String> getNomesProfs () {return nomesProfessores;}
@@ -49,7 +63,7 @@ public class DadosAlunosTXT  extends Aluno{
 
     //CADASTRO ALUNO
     public static void salvarEmTxt(String caminhoArquivo, String matricula, String nome, String curso, boolean condicao, String materiasDone,
-     String materiasCursando, String nomeProf, String turnoProf, String horarioProf, String tipoAva, String semestre, String mencoes) {
+     String materiasCursando, String nomeProf, String turnoProf, String horarioProf, String tipoAva, String semestre, String mencoes, String materiasFall) {
         String dadosAluno = String.join("\n", 
         "---------------------",
         "ALUNO ESPECIAL: " + (condicao ? "SIM" : "NÃO"),
@@ -59,6 +73,7 @@ public class DadosAlunosTXT  extends Aluno{
         "CURSO: " + curso,
         "MATERIAS FINALIZADAS: " + materiasDone,
         "MENÇÕES FINAIS: "+ mencoes,
+        "MATERIAS REPROVADAS: " +materiasFall,
         "",
         "MATERIAS CURSANDO: " + materiasCursando,
         "NOME PROFESSOR: "+ nomeProf,
@@ -116,168 +131,6 @@ public class DadosAlunosTXT  extends Aluno{
         return nomes;
     }
 
-    //Buscar Dados
-    public void BuscarDados(String caminhoArquivo, String dado, String dadoExtra) {
-        
-        materiasFazendo.clear();
-        materiasFinalizadas.clear();
-        materiasCursando = null;
-        matriculaVelha = null;
-        nomeVelho = null;
-        cursoVelho = null;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) { 
-            if("alunos.txt".equals(caminhoArquivo)) {
-            while ((linha = br.readLine()) != null) {
-                if (linha.startsWith("---------------------")) {
-                        if (blocoAluno.toString().toLowerCase().contains(dado.toLowerCase())) {
-                            encontrou = true;
-                            System.out.println("\nAluno encontrado:\n" + blocoAluno.toString());
-                            
-                            // Armazena os dados para serem editados pae
-                            String[] linhas = blocoAluno.toString().split("\n");
-                            for (String l : linhas) {
-                                if (l.trim().toUpperCase().startsWith("MATRICULA:")) {
-                                    matriculaVelha = l.substring(l.indexOf(":") + 1).trim();
-                                } 
-                                else if (l.trim().toUpperCase().startsWith("NOME:")) {
-                                    nomeVelho = l.substring(l.indexOf(":") + 1).trim();
-                                } 
-                                else if (l.trim().toUpperCase().startsWith("CURSO:")) {
-                                    cursoVelho = l.substring(l.indexOf(":") + 1).trim();
-                                }
-                                else if (l.trim().toUpperCase().startsWith("ALUNO ESPECIAL:")) {
-                                    condicao = l.substring(l.indexOf(":") + 1).trim();
-                                }
-                                else if (l.trim().toUpperCase().startsWith("SEMESTRE: ")) {
-                                    semestreAtual = l.substring(l.indexOf(":")+1).trim();
-                                }
-                                else if (l.trim().toUpperCase().startsWith("MATERIAS CURSANDO:")) {
-                                    materiasCursando = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] cursandoArray = materiasCursando.split(",");
-                                    for(String materia : cursandoArray) {
-                                        materiasFazendo.add(materia.trim());
-                                    }
-                                }
-                                else if (l.toUpperCase().startsWith("MATERIAS FINALIZADAS:")) {
-                                    String materias = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] materiasArray = materias.split(",");
-                                    for (String materia : materiasArray) {
-                                        materiasFinalizadas.add(materia.trim());
-                                    }
-                                }
-
-                                if (matriculaVelha != null && nomeVelho != null && cursoVelho != null && condicao != null && !materiasFinalizadas.isEmpty() && !materiasFazendo.isEmpty()) { // TCHAU LOOP AMEM
-                                    break;
-                                }
-                            }
-                        break;
-                    
-                }
-                blocoAluno.setLength(0); 
-                } else {
-                    blocoAluno.append(linha).append("\n");
-                }
-            }
-            if(!encontrou){
-                System.out.println("Aluno não encontrado.");}
-            } 
-            else if ("turmas.txt".equals(caminhoArquivo)) {
-                avaliacaoList.clear();
-                turnosList.clear();
-                horariosList.clear();
-                nomesProfessores.clear();
-                matriculadosList.clear();
-
-                String turno = null;
-                String nomeProf = null;
-                String horario = null;
-                String avaliacao = null;
-                String matriculados = null;
-                String materia = null;
-                String cargaH = null;
-
-                String linha;
-                StringBuilder blocoProf = new StringBuilder();
-                boolean encontrou = false;
-
-                //não atualiza a lista de alunos na turma.
-
-                while ((linha = br.readLine()) != null) {
-                    if (linha.startsWith("---------------------")) {
-                        if (blocoProf.toString().toLowerCase().contains(dado.toLowerCase())) {
-                            encontrou = true;
-                            System.out.println("\nProfessor encontrado:\n" + blocoProf.toString());
-                                
-                            String[] linhas = blocoProf.toString().split("\n");
-                            for (String l : linhas) {
-                                if (l.trim().toUpperCase().startsWith("TURNO:")) {
-                                    turno = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] turnoArray = turno.split(",");
-                                    for(String t : turnoArray) {
-                                        turnosList.add(t.trim());
-                                    }
-                                }
-                                if (l.trim().toUpperCase().startsWith("NOME DA DISCIPLINA:")) {
-                                    materia = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] materiaArray = materia.split(",");
-                                    for(String t : materiaArray) {
-                                        materiaList.add(t.trim());
-                                    }
-                                }
-                                else if (l.trim().toUpperCase().startsWith("NOME PROFESSOR:")) {
-                                    professor = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] nomeArray = professor.split(",");
-                                    for(String t : nomeArray) {
-                                        nomesProfessores.add(t.trim());
-                                    }
-                                }
-                                else if (l.trim().toUpperCase().startsWith("HORARIO:")) {
-                                    horario = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] horariosArray = horario.split(",");
-                                    for(String hora : horariosArray) {
-                                        horariosList.add(hora.trim());
-                                    }
-                                }
-                                else if (l.trim().toUpperCase().startsWith("ALUNOS MATRICULADOS:")) {
-                                    matriculados = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] matriculadosArray = matriculados.split(",");
-                                    for(String mat : matriculadosArray) {
-                                        matriculadosList.add(mat.trim());
-                                    }
-                                }
-                                else if (l.trim().toUpperCase().startsWith("CARGA HORARIA:")) {
-                                    cargaH = l.substring(l.indexOf(":") + 1).trim();
-                                    String [] cargaArray = cargaH.split(",");
-                                    for (String carga : cargaArray) {
-                                        cargaHorariaList.add(carga.trim());
-                                    }
-                                    
-                                }
-                                else if (l.trim().toUpperCase().startsWith("AVALIAÇÃO:")) {
-                                    avaliacao = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] avaliacosArray = avaliacao.split(",");
-                                    for(String ava : avaliacosArray) {
-                                        avaliacaoList.add(ava.trim());
-                                    }
-                                }
-                                if (turno != null && horario != null && avaliacao != null && matriculados != null) {
-                                }
-                            }
-                            break;
-                        }
-                        blocoProf.setLength(0); 
-                    } else {
-                        blocoProf.append(linha).append("\n");
-                    }
-                }
-                if(!encontrou){
-                    System.out.println("Professor não encontrado.");
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
-        }
-    }
+    
 } 
 
