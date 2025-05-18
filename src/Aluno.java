@@ -86,6 +86,13 @@ public class Aluno extends Menu {
                 escolha.Serviços();
             }
             case 5 -> {
+                DadosAlunosTXT buscarInfo = new DadosAlunosTXT();
+                VerificadorMatricula verificarMat = new VerificadorMatricula();
+                int mat = verificarMat.verificarMatricula(-1);
+
+                buscarInfo.BuscarDados("alunos.txt", String.valueOf(mat), null);
+            }
+            case 6 -> {
                 System.out.println("Voltando ao menu principal...");
                 super.menu();  // VOLTAR PARA CLASSE PAI
             }
@@ -125,16 +132,21 @@ public class Aluno extends Menu {
         int semestre = ValidarLetrasNum.lerInteiro("Qual seu semestre atual: ");
 
         List<String> listaMaterias = new ArrayList<>();
+        List<String> listaMencoes = new ArrayList<>();
         String materias = "";
+        String mencoes = "";
         int qtdMaterias = ValidarLetrasNum.lerInteiro("Quantas materias você ja finalizou: ");
         if (qtdMaterias == 0) {
             listaMaterias.clear();
         } else {
             for (int i = 1; i <= qtdMaterias; i++) {
                 String materiaFinalizada = ValidarLetrasNum.lerTextoValido("Digite o nome da matéria " + i + ": ");
+                String mencoesFinalizadas = ValidarLetrasNum.lerTextoValido("Menção final de "+materiaFinalizada+" (SS, MS, MM, MI, SR): ");
+                listaMencoes.add(mencoesFinalizadas.toUpperCase());
                 listaMaterias.add(materiaFinalizada.toUpperCase());
             }
             materias = String.join(", ", listaMaterias);
+            mencoes = String.join(",", listaMencoes);
         }
 
         switch (this.tipoAluno) {
@@ -209,7 +221,7 @@ public class Aluno extends Menu {
                 metodoProfs = String.join(",", metodoAvaliacao);
             }
             DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao, materias, doing, nomeProfs,
-             turnoProfs, horarioProfs, metodoProfs, String.valueOf(semestre));
+             turnoProfs, horarioProfs, metodoProfs, String.valueOf(semestre), mencoes);
             aluno();
     }
 

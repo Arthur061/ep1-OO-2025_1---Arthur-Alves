@@ -23,10 +23,8 @@ public class DadosAlunosTXT  extends Aluno{
     private final List<String> turnosList = new ArrayList<>();
     private final List<String> avaliacaoList = new ArrayList<>();
     private final List<String> horariosList = new ArrayList<>();
-   private final List<String> nomesProfessores = new ArrayList<>();
-   // private final List<String> turnosProfessores = new ArrayList<>();
-   // private final List<String> horarioProfessores = new ArrayList<>();
-   // private final List<String> avaProfessores = new ArrayList<>();
+    private final List<String> nomesProfessores = new ArrayList<>();
+    private final List<String> matriculadosList = new ArrayList<>();
 
     public String getMatriculaVelha() {return matriculaVelha;}
     public String getNomeVelho() {return nomeVelho;}
@@ -36,11 +34,7 @@ public class DadosAlunosTXT  extends Aluno{
     public String getNomeProf() {return professor;}
 
     public List<String> getNomesProfs () {return nomesProfessores;}
-   // public List<String> getTurnosProfs () {return turnosProfessores;}
-   // public List<String> getHorarioProfs () {return horarioProfessores;}   
-   // public List<String> geAvaProfs (){return avaProfessores; }
-   // public List<String> getMateriasFazendo() {return materiasFazendo;}
-
+    public List<String> getmatriculadosList() {return matriculadosList;}
     public List<String> getTurnosList() {return turnosList;}
     public List<String> getAvaliacaoList() {return avaliacaoList;}
     public List<String> getHorariosList() {return horariosList;}
@@ -51,7 +45,7 @@ public class DadosAlunosTXT  extends Aluno{
 
     //CADASTRO ALUNO
     public static void salvarEmTxt(String caminhoArquivo, String matricula, String nome, String curso, boolean condicao, String materiasDone,
-     String materiasCursando, String nomeProf, String turnoProf, String horarioProf, String tipoAva, String semestre) {
+     String materiasCursando, String nomeProf, String turnoProf, String horarioProf, String tipoAva, String semestre, String mencoes) {
         String dadosAluno = String.join("\n", 
         "---------------------",
         "ALUNO ESPECIAL: " + (condicao ? "SIM" : "NÃO"),
@@ -60,6 +54,7 @@ public class DadosAlunosTXT  extends Aluno{
         "SEMESTRE: " + semestre,
         "CURSO: " + curso,
         "MATERIAS FINALIZADAS: " + materiasDone,
+        "MENÇÕES FINAIS: "+ mencoes,
         "",
         "MATERIAS CURSANDO: " + materiasCursando,
         "NOME PROFESSOR: "+ nomeProf,
@@ -188,17 +183,20 @@ public class DadosAlunosTXT  extends Aluno{
                 turnosList.clear();
                 horariosList.clear();
                 nomesProfessores.clear();
+                matriculadosList.clear();
 
                 String turno = null;
                 String nomeProf = null;
                 String horario = null;
                 String avaliacao = null;
+                String matriculados = null;
 
                 String linha;
                 StringBuilder blocoProf = new StringBuilder();
                 boolean encontrou = false;
 
-                
+                //não atualiza a lista de alunos na turma.
+
                 while ((linha = br.readLine()) != null) {
                     if (linha.startsWith("---------------------")) {
                         if (blocoProf.toString().toLowerCase().contains(dado.toLowerCase())) {
@@ -216,7 +214,7 @@ public class DadosAlunosTXT  extends Aluno{
                                 }
                                 else if (l.trim().toUpperCase().startsWith("NOME PROFESSOR:")) {
                                     professor = l.substring(l.indexOf(":") + 1).trim();
-                                    String[] nomeArray = nomeProf.split(",");
+                                    String[] nomeArray = professor.split(",");
                                     for(String t : nomeArray) {
                                         nomesProfessores.add(t.trim());
                                     }
@@ -228,15 +226,21 @@ public class DadosAlunosTXT  extends Aluno{
                                         horariosList.add(hora.trim());
                                     }
                                 }
-                                else if (l.trim().toUpperCase().startsWith("TIPO AVALIAÇÃO:")) {
+                                else if (l.trim().toUpperCase().startsWith("ALUNOS MATRICULADOS:")) {
+                                    matriculados = l.substring(l.indexOf(":") + 1).trim();
+                                    String[] matriculadosArray = matriculados.split(",");
+                                    for(String mat : matriculadosArray) {
+                                        matriculadosList.add(mat.trim());
+                                    }
+                                }
+                                else if (l.trim().toUpperCase().startsWith("AVALIAÇÃO:")) {
                                     avaliacao = l.substring(l.indexOf(":") + 1).trim();
                                     String[] avaliacosArray = avaliacao.split(",");
                                     for(String ava : avaliacosArray) {
                                         avaliacaoList.add(ava.trim());
                                     }
                                 }
-                                if (turno != null && horario != null && avaliacao != null) {
-                                    System.out.println("TIPO AVALIAÇÃO: "+avaliacaoList); System.out.println("HORARIO: "+horariosList); System.out.println("TURNO: "+turnosList);
+                                if (turno != null && horario != null && avaliacao != null && matriculados != null) {
                                 }
                             }
                             break;

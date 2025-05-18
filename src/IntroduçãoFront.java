@@ -19,7 +19,8 @@ public class IntroduçãoFront {
         System.out.println("2- LISTAR ALUNOS");
         System.out.println("3- EDITAR ALUNO");
         System.out.println("4- MATRICULA E TRANCAMENTO");
-        System.err.println("5- VOLTAR PARA MENU INICIAL\n");
+        System.out.println("5- MINHAS INFORMAÇÕES");
+        System.err.println("6- VOLTAR PARA MENU INICIAL\n");
         System.out.print("Sua escolha: ");
     }
 
@@ -79,5 +80,19 @@ public class IntroduçãoFront {
         System.out.println("1- MANHÃ");
         System.out.println("2- TARDE");
         System.out.println("3- NOITE");
+    }
+    public void MenuAvaliacoes () {
+        System.out.println("\n=== MENU DE AVALIAÇÕES ===\n");
+        System.out.println("Qual opção você deseja acessar?");
+        System.out.println("1- RELATORIOS");
+        System.out.println("2- LANÇAMENTOS");
+        System.out.println("3- BOLETINS");
+        System.out.println("4- VOLTAR MENU PRINCIPAL");
+    }
+    public void lancamentoAvaliacoes () {
+        System.out.println("\n Estamos na aba de lançamentos!\n Oque você deseja?\n");
+        System.out.println("1- NOTAS");
+        System.out.println("2- FREQUÊNCIA");
+        System.out.println("3- VOLTAR MENU");
     }
 }

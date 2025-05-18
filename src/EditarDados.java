@@ -190,6 +190,26 @@ public class EditarDados extends DadosAlunosTXT {
         
     }
 
+    // DESTRANCAR SEMESTRE
+    public void destrancarSemestre(int matricula) {
+        DadosAlunosTXT buscarSemestre = new DadosAlunosTXT();
+        System.out.println("Procurando pela matricula " + matricula + " na lista...");
+        buscarSemestre.BuscarDados("alunos.txt",String.valueOf(matricula),null);
+
+        int semestreNovo = ValidarLetrasNum.lerInteiro("Qual o semestre que você trancou: ");
+
+        editarDados(String.valueOf(matricula), "SEMESTRE", String.valueOf(semestreNovo));
+        editarDados(String.valueOf(matricula), "MATERIAS CURSANDO", "");
+        editarDados(String.valueOf(matricula), "NOME PROFESSOR", "");
+        editarDados(String.valueOf(matricula), "TURNO", "");
+        editarDados(String.valueOf(matricula), "HORARIO", "");
+        editarDados(String.valueOf(matricula), "TIPO AVALIAÇÃO", "");
+
+        BuscarDados("alunos.txt", String.valueOf(matricula), null);
+        System.out.println("Bem-vindo de volta! Curta seu novo semestre!");
+
+    }
+
     // TRANCAR DISCIPLINA
     public void trancarDisciplina (String parametro) throws IOException {
         DadosAlunosTXT buscarMateria = new DadosAlunosTXT();
@@ -251,13 +271,12 @@ public class EditarDados extends DadosAlunosTXT {
 
     // CADASTRO DE NOVAS TURMAS
     public void adicionarNovasInfosAoAluno(String caminhoArquivo, String nomeAluno, String novaMateria, String novoProfessor,
-                                       List<String> novosTurnos, List<String> novosHorarios, List<String> novasAvaliacoes) {
+                                       List<String> novosTurnos, List<String> novosHorarios, List<String> novasAvaliacoes, List<String> novosAlunos) {
         
+        // VERIFICAR SE HÁ VAGA NA TURMA ESCOLHIDO ;)
         String caminhoTurmas = "turmas.txt";
-        DadosTurmasTXT atualizador = new DadosTurmasTXT();
-                                        
-        boolean returnAtualizador = atualizador.atualizarCapacidade(caminhoTurmas, novaMateria);
-                                        
+        DadosTurmasTXT atualizador = new DadosTurmasTXT();                
+        boolean returnAtualizador = atualizador.atualizarCapacidade(caminhoTurmas, novaMateria);                  
         if (!returnAtualizador) {
             System.out.println("Não há mais vagas disponíveis para a disciplina: " + novaMateria);
             return;
@@ -276,8 +295,7 @@ public class EditarDados extends DadosAlunosTXT {
             while ((linha = br.readLine()) != null) {
                 if (linha.startsWith("---------------------")) {
                     if (alunoAlvo) {
-                        // Atualiza o bloco atual com os novos dados
-                        String blocoAtualizado = acrescentarDadosNoBloco(blocoAtual.toString(), novaMateria, novoProfessor, novosTurnos, novosHorarios, novasAvaliacoes);
+                        String blocoAtualizado = acrescentarDadosNoBloco(blocoAtual.toString(), novaMateria, novoProfessor, novosTurnos, novosHorarios, novasAvaliacoes, novosAlunos);
                         novoConteudo.append(blocoAtualizado);
                     } else {
                         novoConteudo.append(blocoAtual.toString());
@@ -298,9 +316,8 @@ public class EditarDados extends DadosAlunosTXT {
                 }
             }
 
-            // Último bloco
             if (alunoAlvo) {
-                String blocoAtualizado = acrescentarDadosNoBloco(blocoAtual.toString(), novaMateria, novoProfessor, novosTurnos, novosHorarios, novasAvaliacoes);
+                String blocoAtualizado = acrescentarDadosNoBloco(blocoAtual.toString(), novaMateria, novoProfessor, novosTurnos, novosHorarios, novasAvaliacoes, novosAlunos);
                 novoConteudo.append(blocoAtualizado);
             } else {
                 novoConteudo.append(blocoAtual.toString());
@@ -320,13 +337,14 @@ public class EditarDados extends DadosAlunosTXT {
     }
 
     private String acrescentarDadosNoBloco(String bloco, String novaMateria, String novoProfessor,
-                                       List<String> novosTurnos, List<String> novosHorarios, List<String> novasAvaliacoes) {
+                                       List<String> novosTurnos, List<String> novosHorarios, List<String> novasAvaliacoes, List<String> novosAlunos) {
     String[] linhas = bloco.split("\n");
     String materias = "";
     String professores = "";
     String turnos = "";
     String horarios = "";
     String avaliacoes = "";
+    String alunosMatriculados = "";
 
     StringBuilder blocoFinal = new StringBuilder();
 
@@ -335,25 +353,41 @@ public class EditarDados extends DadosAlunosTXT {
             materias = linha.substring(linha.indexOf(":") + 1).trim();
             materias += ", " + novaMateria;
             blocoFinal.append("MATERIAS CURSANDO: ").append(materias).append("\n");
-        } else if (linha.toUpperCase().startsWith("NOME PROFESSOR:")) {
+        }
+         else if (linha.toUpperCase().startsWith("NOME PROFESSOR:")) {
             professores = linha.substring(linha.indexOf(":") + 1).trim();
             professores += ", " + novoProfessor;
-            blocoFinal.append("NOME PROFESSOR: ").append(professores).append("\n");
-        } else if (linha.toUpperCase().startsWith("TURNO:")) {
+            blocoFinal.append("NOME PROFESSOR: ").append(professores).append("\n");    
+        }
+         else if (linha.toUpperCase().startsWith("TURNO:")) {
             turnos = linha.substring(linha.indexOf(":") + 1).trim();
             turnos += ", " + String.join(", ", novosTurnos);
             blocoFinal.append("TURNO: ").append(turnos).append("\n");
-        } else if (linha.toUpperCase().startsWith("HORARIO:")) {
+        }
+         else if (linha.toUpperCase().startsWith("HORARIO:")) {
             horarios = linha.substring(linha.indexOf(":") + 1).trim();
             horarios += ", " + String.join(", ", novosHorarios);
             blocoFinal.append("HORARIO: ").append(horarios).append("\n");
-        } else if (linha.toUpperCase().startsWith("TIPO AVALIAÇÃO:")) {
+        }
+         else if (linha.toUpperCase().startsWith("TIPO AVALIAÇÃO:")) {
             avaliacoes = linha.substring(linha.indexOf(":") + 1).trim();
             avaliacoes += ", " + String.join(", ", novasAvaliacoes);
             blocoFinal.append("TIPO AVALIAÇÃO: ").append(avaliacoes).append("\n");
-        } else {
-            blocoFinal.append(linha).append("\n");
         }
+        else if (linha.toUpperCase().startsWith("ALUNOS MATRICULADOS:")) {
+            alunosMatriculados = linha.substring(linha.indexOf(":") + 1).trim();
+        
+            if (!alunosMatriculados.isEmpty()) {
+                alunosMatriculados += ", " + String.join(", ", novosAlunos);
+            } else {
+                alunosMatriculados = String.join(", ", novosAlunos);
+            }
+            blocoFinal.append("ALUNOS MATRICULADOS: ").append(alunosMatriculados).append("\n");
+        }
+             
+        else {
+            blocoFinal.append(linha).append("\n");
+        }        
     }
 
     return blocoFinal.toString();

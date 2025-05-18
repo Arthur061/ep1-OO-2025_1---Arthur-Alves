@@ -67,7 +67,7 @@ public class DisciplinasTurmas extends Aluno  {
         }
     }
 
-    // TRANCAMENTO
+    // TRANCAMENTO / DESTRANCAMENTO
     public void Trancamento() {
         IntroduçãoFront opcoes = new IntroduçãoFront();
         opcoes.menuTrancamento();
@@ -109,9 +109,16 @@ public class DisciplinasTurmas extends Aluno  {
 
             }
             case 3 -> {
+                System.out.println("Vamos destrancar o seu semestre então.");
+                System.out.println("Antes de começar o processo preciso que você me diga sua matricula.");
+                int matricula = verificandomat.verificarMatricula(-1);
+                
+                novosDados.destrancarSemestre(matricula);
 
             }
             case 4 -> {
+                MenuOptions voltando = new MenuTurma();
+                voltando.executar();
 
             }
             default -> {
@@ -125,6 +132,7 @@ public class DisciplinasTurmas extends Aluno  {
     public void matricularDisciplina() {
         String profEscolhido = "";
         String materia; int matricula;
+        int numDisciplinas;
         
 
         System.out.println("\nPartiu fazer as matriculas então!\n ");
@@ -205,7 +213,14 @@ public class DisciplinasTurmas extends Aluno  {
         String nome = buscarMatricula.getNomeVelho();
         String condicao = buscarMatricula.getCondicao();
         List<String> materiasCursando = buscarMatricula.getMateriasCursando();
+        List<String> alunosMatriculados = buscarprofessor.getmatriculadosList();
         String ParametroCursando = String.valueOf(materiasCursando);
+        
+        if (alunosMatriculados.isEmpty()) {
+            System.out.println("A lista de alunos está vazia. Verifique se a linha foi lida corretamente.");
+        } else {
+            System.out.println("Alunos: " + alunosMatriculados);
+        }
 
         
         System.out.println(buscarprofessor.getTurnosList()); System.out.println(buscarprofessor.getHorariosList()); System.out.println(buscarprofessor.getAvaliacaoList());
@@ -223,11 +238,12 @@ public class DisciplinasTurmas extends Aluno  {
                     voltando.executar();
                 }
                 while (condicaoAluno) {
-                    int numDisciplinas = ValidarLetrasNum.lerInteiro("Quantas materias você quer matricular: ");
+                    numDisciplinas = ValidarLetrasNum.lerInteiro("Quantas materias você quer matricular: ");
                     if (numDisciplinas > 2) {
                         System.out.println("Você pode se matricular em no maximo 2 disciplinas!");
                         System.out.println("Você atualmente está matriculado em "+materiasCursando.size()+" materia(s).");
-                    } else {
+                    } else if ( numDisciplinas == 1) {
+                        System.out.println("Você foi matriculado em "+materia+". Parabens!");
                         break;
                     }
                 }
@@ -241,22 +257,24 @@ public class DisciplinasTurmas extends Aluno  {
                     voltando.executar();
                 }
                 while (!condicaoAluno) {
-                    int numDisciplinas = ValidarLetrasNum.lerInteiro("Quantas materias você quer matricular: ");
+                    numDisciplinas = ValidarLetrasNum.lerInteiro("Quantas materias você quer matricular: ");
                     if (numDisciplinas > 5) {
                         System.out.println("Você pode se matricular em no maximo 5 disciplinas!");
                         System.out.println("Você atualmente está matriculado em "+materiasCursando.size()+" materia(s).");
-                    } else {
-                        matricularDisciplina();
+                    } else if (numDisciplinas == 1 ) {
+                        System.out.println("Você foi matriculado em "+materia+". Parabens!");
                         break;
                     }
                 }
             }
         }
-
+        alunosMatriculados.add(nomeEstudante);
+        System.out.println(alunosMatriculados);
         EditarDados editarTurmas = new EditarDados();
         editarTurmas.adicionarNovasInfosAoAluno("alunos.txt", nomeEstudante.toUpperCase(), materia.toUpperCase(), profEscolhido.toUpperCase(),
-        buscarprofessor.getTurnosList(), buscarprofessor.getHorariosList(), buscarprofessor.getAvaliacaoList());
-        
+        buscarprofessor.getTurnosList(), buscarprofessor.getHorariosList(), buscarprofessor.getAvaliacaoList(), alunosMatriculados);
+        addAlunoNaTurma adicionar = new addAlunoNaTurma();
+        adicionar.adicionarAlunoNaTurma("turmas.txt", materia, nomeEstudante.toUpperCase());
     }
 
     // CADASTRAR NOVAS DISCIPLINAS

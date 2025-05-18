@@ -27,6 +27,7 @@ public class DadosTurmasTXT {
         "MODO: "+ modo,
         "SALA: "+ sala,
         "HORARIO: "+ horarioI+"h até "+horarioF+"h",
+        "ALUNOS MATRICULADOS: ",
         "---------------------");
 
         try {
@@ -44,38 +45,6 @@ public class DadosTurmasTXT {
         }
      }
 
-    // MATRICULAR ALUNO
-    public static void MatriculaTXT (String caminhoArquivo, String nome, String matricula, String curso, String condicao, String materiasDone,
-    String disciplina, String professor, String turno, String horario, String avaliacao) {
-        String dadosMatricula = String.join("\n",
-        "---------------------",
-        "NOME ALUNO: " + nome,
-        "MATRICULA: " + matricula,
-        "CURSO: " + curso,
-        "ALUNO ESPECIAL: " + condicao,
-        "MATERIAS FINALIZADAS: "+ materiasDone,
-        "",
-        "DISCIPLINAS CURSANDO: "+ disciplina,
-        "NOME PROFESSOR: " + professor,
-        "TURNO: "+ turno,
-        "HORARIO: "+ horario,
-        "TIPO AVALIAÇÃO: "+ avaliacao,
-        "---------------------");
-        try {
-            Files.write(
-                Paths.get(caminhoArquivo),
-                (dadosMatricula + "\n").getBytes(),
-                StandardOpenOption.CREATE,
-                StandardOpenOption.APPEND
-            );
-            System.out.println("Turma salva com sucesso em " + caminhoArquivo);
-            System.out.println("\nTurma cadastrada:\n");
-            System.out.println(dadosMatricula);
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar os dados no arquivo: " + e.getMessage());
-        }
-
-    }
      
     // GARANTIR QUE HAJA CAPACIDADE
     public boolean atualizarCapacidade(String caminhoArquivo, String nomeDisciplina) {
@@ -109,18 +78,25 @@ public class DadosTurmasTXT {
                     }
 
                     if (encontrouDisciplina && linha.toUpperCase().startsWith("CAPACIDADE:")) {
-                        int capacidade = Integer.parseInt(linha.replaceAll("[^0-9]", ""));
-                        if (capacidade > 0) {
-                            capacidade -= 1;
+                        String capacidadeStr = linha.substring(linha.indexOf(":") + 1).trim();
+                        
+                        String[] partes = capacidadeStr.split("/");
+                        int ocupadas = Integer.parseInt(partes[0].trim());
+                        int capacidadeMax = Integer.parseInt(partes[1].trim());
+                    
+                        if (ocupadas < capacidadeMax) {
+                            ocupadas += 1;
                             atualizouCapacidade = true;
 
+                            String novaLinha = "CAPACIDADE: " + ocupadas + "/" + capacidadeMax;
                             int startIdx = blocoAtual.lastIndexOf(linha);
-                            blocoAtual.replace(startIdx, blocoAtual.length(), "CAPACIDADE: " + capacidade + "\n");
+                            blocoAtual.replace(startIdx, startIdx + linha.length(), novaLinha);
                         } else {
                             br.close();
                             return false;
                         }
                     }
+                    
                 } else {
                     novoConteudo.append(linha).append("\n");
                 }
