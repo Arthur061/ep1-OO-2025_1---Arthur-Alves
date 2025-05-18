@@ -57,4 +57,17 @@ public class ValidarLetrasNum {
         return sala;
     }
 
+    // LER DOUBLE
+    public static double lerDouble (String mensagem) {
+        while (true) { 
+            try {
+                System.out.print(mensagem);
+                return sc.nextDouble();
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada inválida. Digite um número decimal, como 7.5 ou 8.0.");
+                sc.next();
+            }
+        }
+    }
+
 }

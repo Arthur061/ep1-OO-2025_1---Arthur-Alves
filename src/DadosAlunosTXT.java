@@ -25,6 +25,8 @@ public class DadosAlunosTXT  extends Aluno{
     private final List<String> horariosList = new ArrayList<>();
     private final List<String> nomesProfessores = new ArrayList<>();
     private final List<String> matriculadosList = new ArrayList<>();
+    private final List<String> materiaList = new ArrayList<>();
+    private final List<String> cargaHorariaList = new ArrayList<>();
 
     public String getMatriculaVelha() {return matriculaVelha;}
     public String getNomeVelho() {return nomeVelho;}
@@ -33,6 +35,8 @@ public class DadosAlunosTXT  extends Aluno{
     public String getCondicao () {return condicao;}
     public String getNomeProf() {return professor;}
 
+    public List<String> getCargaH() {return cargaHorariaList;}
+    public List<String> getmateriaProf() {return materiaList;}
     public List<String> getNomesProfs () {return nomesProfessores;}
     public List<String> getmatriculadosList() {return matriculadosList;}
     public List<String> getTurnosList() {return turnosList;}
@@ -190,6 +194,8 @@ public class DadosAlunosTXT  extends Aluno{
                 String horario = null;
                 String avaliacao = null;
                 String matriculados = null;
+                String materia = null;
+                String cargaH = null;
 
                 String linha;
                 StringBuilder blocoProf = new StringBuilder();
@@ -212,6 +218,13 @@ public class DadosAlunosTXT  extends Aluno{
                                         turnosList.add(t.trim());
                                     }
                                 }
+                                if (l.trim().toUpperCase().startsWith("NOME DA DISCIPLINA:")) {
+                                    materia = l.substring(l.indexOf(":") + 1).trim();
+                                    String[] materiaArray = materia.split(",");
+                                    for(String t : materiaArray) {
+                                        materiaList.add(t.trim());
+                                    }
+                                }
                                 else if (l.trim().toUpperCase().startsWith("NOME PROFESSOR:")) {
                                     professor = l.substring(l.indexOf(":") + 1).trim();
                                     String[] nomeArray = professor.split(",");
@@ -232,6 +245,14 @@ public class DadosAlunosTXT  extends Aluno{
                                     for(String mat : matriculadosArray) {
                                         matriculadosList.add(mat.trim());
                                     }
+                                }
+                                else if (l.trim().toUpperCase().startsWith("CARGA HORARIA:")) {
+                                    cargaH = l.substring(l.indexOf(":") + 1).trim();
+                                    String [] cargaArray = cargaH.split(",");
+                                    for (String carga : cargaArray) {
+                                        cargaHorariaList.add(carga.trim());
+                                    }
+                                    
                                 }
                                 else if (l.trim().toUpperCase().startsWith("AVALIAÇÃO:")) {
                                     avaliacao = l.substring(l.indexOf(":") + 1).trim();

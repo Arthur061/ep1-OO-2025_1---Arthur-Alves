@@ -95,4 +95,9 @@ public class IntroduçãoFront {
         System.out.println("2- FREQUÊNCIA");
         System.out.println("3- VOLTAR MENU");
     }
+    public void migrarLacamentos () {
+        System.out.println("Deseja ir para a aba de frequencias e finalizar o processo?");
+        System.out.println("1- SIM");
+        System.out.println("2- NÃO");
+    }
 }
