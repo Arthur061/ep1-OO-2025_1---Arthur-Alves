@@ -1,16 +1,20 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Aluno extends Menu {
+public class Aluno extends MenuPrincipal {
     private Integer matricula; private String nome; private String curso;private Integer opcao; private Integer tipoAluno;
     public boolean condicao; String caminhoArquivo = "alunos.txt"; public String dadoAluno;
+    buscarDados buscarInfo = new buscarDados();
 
     Scanner sc = new Scanner(System.in);
-    public void aluno() {
-        IntroduçãoFront front = new IntroduçãoFront();
+    public void aluno() throws IOException {
+        FrontSysout front = new FrontSysout();
         front.MenuAluno();
         opcao = sc.nextInt();
+
+        ValidarLetrasNum verificador = new ValidarLetrasNum();
 
         // EXECUÇÃO DAS OPÇÕES 
         switch (this.opcao) {
@@ -57,7 +61,6 @@ public class Aluno extends Menu {
                     case 2 -> { // EDITAR NOME
                         System.out.println("\nVamos editar o nome!\n");
 
-                        VerificadorMatricula verificador = new VerificadorMatricula();
                         int matricula = verificador.verificarMatricula(-1);
 
                         EditarDados editarNome = new EditarDados();
@@ -68,7 +71,6 @@ public class Aluno extends Menu {
                     case 3 -> { // EDITAR CURSO
                         System.out.println("\nVamos editar o curso!\n");
 
-                        VerificadorMatricula verificador = new VerificadorMatricula();
                         int matricula = verificador.verificarMatricula(-1);
 
                         EditarDados editarCurso = new EditarDados();
@@ -86,9 +88,8 @@ public class Aluno extends Menu {
                 escolha.Serviços();
             }
             case 5 -> {
-                DadosAlunosTXT buscarInfo = new DadosAlunosTXT();
-                VerificadorMatricula verificarMat = new VerificadorMatricula();
-                int mat = verificarMat.verificarMatricula(-1);
+                
+                int mat = verificador.verificarMatricula(-1);
 
                 buscarInfo.BuscarDados("alunos.txt", String.valueOf(mat), null);
             }
@@ -101,9 +102,9 @@ public class Aluno extends Menu {
         } 
     }   
     //CADASTRAR ALUNO
-    public void cadastrarAluno() {
+    public void cadastrarAluno() throws IOException {
+        ValidarLetrasNum verificador = new ValidarLetrasNum();
         System.err.println("Vamos seguir com o cadastro");
-        VerificadorMatricula verificador = new VerificadorMatricula();
         int matricula = verificador.verificarMatricula(-1);
         System.out.println("Matrícula validada: " + matricula);
 
@@ -187,7 +188,7 @@ public class Aluno extends Menu {
                     int horarioF = ValidarLetrasNum.lerInteiro("Horario de termino: ");
 
 
-                    IntroduçãoFront avaliacao = new IntroduçãoFront();
+                    FrontSysout avaliacao = new FrontSysout();
                     avaliacao.metodoAva();
                     String metodoAva = "";
                     int escolhaAva = ValidarLetrasNum.lerInteiro("");
@@ -220,13 +221,34 @@ public class Aluno extends Menu {
                 horarioProfs = String.join(",", horaioAulas);
                 metodoProfs = String.join(",", metodoAvaliacao);
             }
+            int numReprovacao = ValidarLetrasNum.lerInteiro("Quantas matérias você já reprovou: ");
+            List<String> materiasReprovadas = new ArrayList<>();
+
+            if (numReprovacao > 0) {
+                for (int i = 0; i < numReprovacao; i++) {
+                    String nomeMateria = ValidarLetrasNum.lerTextoValido("Nome da matéria " + (i + 1) + ": ");
+                    String mencao = ValidarLetrasNum.lerTextoValido("Menção da matéria " + nomeMateria + ": ");
+                    String materiaFormatada = nomeMateria.toUpperCase() + " (" + mencao.toUpperCase() + ")";
+                    materiasReprovadas.add(materiaFormatada);
+                }
+            }
+            if (materiasReprovadas.isEmpty()) {
+                System.out.println("Nenhuma matéria reprovada.");
+            } else {
+                System.out.println("Matérias reprovadas:");
+                for (String mat : materiasReprovadas) {
+                    System.out.println(mat);
+                }
+            }
+            String materiasReprovadasStr = String.join(", ", materiasReprovadas);
+
             DadosAlunosTXT.salvarEmTxt("alunos.txt", String.valueOf(matricula), nome, curso, condicao, materias, doing, nomeProfs,
-             turnoProfs, horarioProfs, metodoProfs, String.valueOf(semestre), mencoes);
+            turnoProfs, horarioProfs, metodoProfs, String.valueOf(semestre), mencoes, materiasReprovadasStr);
             aluno();
     }
 
     // LISTAR ALUNOS
-    public void ListarAlunos () {
+    public void ListarAlunos () throws IOException {
         List<String> nomesAlunos = DadosAlunosTXT.getNomesAlunos(caminhoArquivo);
         if (nomesAlunos.isEmpty()) {
             System.out.println("Lista atualmente está vazia :("); Aluno voltarAluno = new Aluno(); voltarAluno.aluno();
@@ -242,6 +264,7 @@ public class Aluno extends Menu {
 
     // EDITAR MATRICULA CHECK
     public void EditarMatricula () {
+        ValidarLetrasNum verificador = new ValidarLetrasNum();
         System.out.println("Vamos editar a matricula!\n");
 
         // Buscar dados do guerreiro
@@ -253,18 +276,16 @@ public class Aluno extends Menu {
         }
 
         System.out.println("Procurando pelo nome " + dadoAluno.toUpperCase() + " na lista...");
-        DadosAlunosTXT buscarMatricula = new DadosAlunosTXT();
-        buscarMatricula.BuscarDados("alunos.txt",dadoAluno, null);
+        buscarInfo.BuscarDados("alunos.txt",dadoAluno, null);
 
         // Validação da nova matrícula
 
-        System.out.print("Digite a nova matricula para "+buscarMatricula.getNomeVelho()+", a atual é "+buscarMatricula.getMatriculaVelha()+": \n");
+        System.out.print("Digite a nova matricula para "+buscarInfo.getNomeVelho()+", a atual é "+buscarInfo.getMatriculaVelha()+": \n");
 
-        VerificadorMatricula verificador = new VerificadorMatricula();
         int novaMatricula = verificador.verificarMatricula(-1);
                         
         EditarDados edicaoMatricula = new EditarDados();
-        edicaoMatricula.editarDados(buscarMatricula.getMatriculaVelha(), "MATRICULA", Long.toString(novaMatricula));
+        edicaoMatricula.editarDados(buscarInfo.getMatriculaVelha(), "MATRICULA", Long.toString(novaMatricula));
                     
     
 }
