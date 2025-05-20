@@ -12,6 +12,7 @@ import java.util.Set;
 public class DisciplinasTurmas extends Aluno  {
     private static Scanner sc = new Scanner(System.in);
     buscarDados buscarInfo = new buscarDados();
+    MenuOptions voltando = new MenuTurma();
 
     private static String preRequisito; private static int reqCont;
     public int getReqCont () {
@@ -55,6 +56,7 @@ public class DisciplinasTurmas extends Aluno  {
                 System.out.println("Ok, vamos listar as turmas disponiveis.");
                 String caminho = "turmas.txt"; 
                 listar(caminho);
+                voltando.executar();
             }
 
             // VOLTAR MENU INICAL CHECK
@@ -62,9 +64,10 @@ public class DisciplinasTurmas extends Aluno  {
                 System.out.println("Bye bye... Voltando para menu inicial.");
                 super.menu();
             } 
-
-
-            default -> {}
+            default -> {
+                System.out.println("Opção invalida!");
+                voltando.executar();
+            }
         }
     }
 
@@ -78,7 +81,6 @@ public class DisciplinasTurmas extends Aluno  {
         boolean Entrada = false;
         ValidarLetrasNum verificandomat = new ValidarLetrasNum();
 
-        // You know why broda
         int escolha = ValidarLetrasNum.lerInteiro("Sua escolha: ");
 
         switch (escolha) {
@@ -97,13 +99,14 @@ public class DisciplinasTurmas extends Aluno  {
                 buscarInfo.BuscarDados("alunos.txt", String.valueOf(matricula), null);
                 String materiaTrancar = ValidarLetrasNum.lerTextoValido("Qual materia você vai querer trancar: ");
                 EditarDados retirar = new EditarDados();
-                //EditarDados buscarMateria = new EditarDados();
     
                 try {
                     System.out.println(materiaTrancar);
                     retirar.trancarDisciplina(materiaTrancar, matricula);
                 } catch (IOException e) {
                     System.out.println("Erro ao tentar trancar disciplina: " + e.getMessage());
+                    voltando.executar();
+
                 }
                 break;
 
@@ -117,15 +120,15 @@ public class DisciplinasTurmas extends Aluno  {
 
             }
             case 4 -> {
-                MenuOptions voltando = new MenuTurma();
+                System.out.println("Voltando para menu...");
                 voltando.executar();
 
             }
             default -> {
                 System.out.println("Opção invalida!");
+                Trancamento();
             }
         }
-
     }
 
     // SE MATRICULAR EM DISCIPLINAS
@@ -143,8 +146,7 @@ public class DisciplinasTurmas extends Aluno  {
         boolean vazio = estaVazio(caminhoArquivo); 
         if (vazio) {
             System.out.println("Eita! parece que ainda não há turmas cadastradas...");
-            MenuTurma menuTurma = new MenuTurma();
-            menuTurma.executar();
+            voltando.executar();
         }
         DadosTurmasTXT.buscarDisciplina("turmas.txt", materia, null);
 
@@ -161,9 +163,9 @@ public class DisciplinasTurmas extends Aluno  {
 
         matricula = ValidarLetrasNum.lerInteiro("Me fala qual a sua matricula, por favor: ");
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula), null);
+
         if (buscarInfo.getSemestreAtual().startsWith("TRANCADO")) {
             System.out.println("Sua matricula atualmente está trancada! Volte após destranca-la.");
-            MenuOptions voltando = new MenuTurma();
             voltando.executar();
         }
 
@@ -179,7 +181,6 @@ public class DisciplinasTurmas extends Aluno  {
         }
         String materiasDone = String.join(", ", materias);
 
-
         // VERIFICAR PRE REQUISITO
         boolean possuiTodos = true;
         for (String req : lista ) {
@@ -191,7 +192,6 @@ public class DisciplinasTurmas extends Aluno  {
                 possuiTodos = false;
                 System.out.println("Você NÃO possui o pre-requisito: " + req);
                 System.out.println("Não será possivel se matricula em "+materia);
-                MenuOptions voltando = new MenuTurma();
                 voltando.executar();
             } else {
                 System.out.println("Você possui o pre-requisito: " + req);
@@ -204,6 +204,21 @@ public class DisciplinasTurmas extends Aluno  {
         }
         
         buscarInfo.BuscarDados("turmas.txt", profEscolhido, materia);
+        List<String> horarioProfessor = buscarInfo.getHorariosList(); 
+        List<String> horariosAluno = buscarInfo.getHorariosAluno();
+        boolean conflito = false;
+        for (String horario : horarioProfessor) {
+            if (horariosAluno.contains(horario)) {
+                conflito = true;
+                break;
+            }
+        }
+        if (conflito) {
+            System.out.println("Há um conflito de horário! Não será possível se matricular nessa turma.");
+            System.out.println("Voltando para o menu.");
+            voltando.executar();
+        }
+
         // GET PARA FAZER A MATRICULA NO TXT
         String nomeEstudante = buscarInfo.getNomeVelho();
         String curso = buscarInfo.getCursoVelho();
@@ -220,10 +235,6 @@ public class DisciplinasTurmas extends Aluno  {
             System.out.println("Alunos: " + alunosMatriculados);
         }
 
-        
-        System.out.println(buscarInfo.getTurnosList()); System.out.println(buscarInfo.getHorariosList()); System.out.println(buscarInfo.getAvaliacaoList());
-
-
         // CONDIÇÃO PARA FAZER AS MATRICULAS
         boolean condicaoAluno;
         switch(condicao) {
@@ -232,7 +243,6 @@ public class DisciplinasTurmas extends Aluno  {
                 condicaoAluno = true;
                 if (materiasCursando.size() == 2) {
                     System.out.println("Você já está cursando o número maximo de materia!");
-                    MenuOptions voltando = new MenuTurma();
                     voltando.executar();
                 }
                 while (condicaoAluno) {
@@ -251,7 +261,6 @@ public class DisciplinasTurmas extends Aluno  {
                 condicaoAluno = false;
                 if(materiasCursando.size() == 5) {
                     System.out.println("Você já está cursando o número maximo de materia!");
-                    MenuOptions voltando = new MenuTurma();
                     voltando.executar();
                 }
                 while (!condicaoAluno) {
@@ -267,12 +276,15 @@ public class DisciplinasTurmas extends Aluno  {
             }
         }
         alunosMatriculados.add(nomeEstudante);
-        System.out.println(alunosMatriculados);
+    
         EditarDados editarTurmas = new EditarDados();
         editarTurmas.adicionarNovasInfosAoAluno("alunos.txt", nomeEstudante.toUpperCase(), materia.toUpperCase(), profEscolhido.toUpperCase(),
         buscarInfo.getTurnosList(), buscarInfo.getHorariosList(), buscarInfo.getAvaliacaoList(), alunosMatriculados);
+        
         addAlunoNaTurma adicionar = new addAlunoNaTurma();
         adicionar.adicionarAlunoNaTurma("turmas.txt", materia, nomeEstudante.toUpperCase());
+        System.out.println("Processo de matricula finalizado! Voltando para o menu...");
+        voltando.executar();
     }
 
     // CADASTRAR NOVAS DISCIPLINAS

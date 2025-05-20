@@ -59,7 +59,7 @@ public class EditarDados extends DadosAlunosTXT {
     }
 }
 
-    //CLASSE QUE RESULTA NO DADO EDITADO
+    //CLASSE QUE PROCESSA NO DADO EDITADO
     class ResultadoProcessamento { 
         boolean alunoEncontrado;
         boolean campoAlterado;
@@ -102,9 +102,8 @@ public class EditarDados extends DadosAlunosTXT {
             
         }
         // EDIÇÃOOO
-        if (registroEncontrado) {// Se for o aluno, alterar dado selecionado
+        if (registroEncontrado) {
             for (String linha : linhasBloco) {
-                // Verifica se os campo existem (nome, curso, ...)
                 if (linha.trim().toUpperCase().startsWith(campo.toUpperCase()+": ")) {
                     String prefixo = linha.substring(0, linha.indexOf(":") + 1);
 
@@ -114,7 +113,7 @@ public class EditarDados extends DadosAlunosTXT {
                     resultadoLinhas.add(linha);
                 }
             }
-        } else {// Mantém o bloco original se aluno não foi encontrado
+        } else {
             resultadoLinhas.addAll(Arrays.asList(linhasBloco));
             }
             return new ResultadoProcessamento(registroEncontrado, campoAlterado, resultadoLinhas);
@@ -123,7 +122,7 @@ public class EditarDados extends DadosAlunosTXT {
 
 
     // SAIDAS PARA A EDIÇÃO
-    public void dado(int i, int matricula) {
+    public void dado(int i, int matricula) throws IOException {
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula), null);
 
         switch (i) {
@@ -138,7 +137,7 @@ public class EditarDados extends DadosAlunosTXT {
     }
 
     // EDITAR NOME
-    public void EditarNome (int matricula) {
+    public void EditarNome (int matricula) throws IOException {
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula), null);
 
         System.out.println("Procurando pela matricula " + matricula + " na lista...");
@@ -148,11 +147,14 @@ public class EditarDados extends DadosAlunosTXT {
         novoNome = ValidarLetrasNum.lerTextoValido("Novo nome: ");
 
         editarDados(buscarInfo.getMatriculaVelha(), "NOME", novoNome.toUpperCase());
+        System.out.println("Nome editado com sucesso! Voltando para menu!");
+        MenuOptions voltando = new MenuAluno();
+        voltando.executar();
 
     }
     
     // EDITAR CURSO
-    public void EditarCurso (int matricula) {
+    public void EditarCurso (int matricula) throws IOException {
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula),null);
 
         System.out.println("Procurando pela matricula " + matricula + " na lista...");
@@ -163,11 +165,14 @@ public class EditarDados extends DadosAlunosTXT {
         System.out.println("O curso atual vinculado à sua matrícula é " + cursoVelho);
         novoCurso = ValidarLetrasNum.lerTextoValido("Digite seu novo curso: ");
         editarDados(buscarInfo.getMatriculaVelha(), "CURSO", novoCurso.toUpperCase());
+        System.out.println("Curso editado com sucesso! Voltando para menu...");
+        MenuOptions voltando = new MenuAluno();
+        voltando.executar();
 
     }
 
     // TRANCAR SEMESTRE
-    public void trancarSemestre (int matricula) {
+    public void trancarSemestre (int matricula) throws IOException {
         System.out.println("Procurando pela matricula " + matricula + " na lista...");
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula),null);
 
@@ -184,11 +189,14 @@ public class EditarDados extends DadosAlunosTXT {
 
         System.out.println("SUA MATRICULA ESTÁ ATUALMENTE TRANCADA!");
         buscarInfo.BuscarDados("alunos.txt", String.valueOf(matricula), null);
+        System.out.println("VOLTANDO PARA MENU !");
+        MenuOptions voltando = new MenuTurma();
+        voltando.executar();
         
     }
 
     // DESTRANCAR SEMESTRE
-    public void destrancarSemestre(int matricula) {
+    public void destrancarSemestre(int matricula) throws IOException {
         System.out.println("Procurando pela matricula " + matricula + " na lista...");
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula),null);
 
@@ -203,6 +211,8 @@ public class EditarDados extends DadosAlunosTXT {
 
         buscarInfo.BuscarDados("alunos.txt", String.valueOf(matricula), null);
         System.out.println("Bem-vindo de volta! Curta seu novo semestre!");
+        MenuOptions voltando = new MenuTurma();
+        voltando.executar();
 
     }
 
@@ -256,6 +266,8 @@ public class EditarDados extends DadosAlunosTXT {
         }
         Files.write(Paths.get("alunos.txt"), linhas);
         System.out.println("Disciplina " + parametro.toUpperCase() + " foi trancada com sucesso.");
+        MenuOptions voltando = new MenuTurma();
+        voltando.executar();
     }
 
     // CADASTRO DE NOVAS TURMAS

@@ -101,4 +101,19 @@ public class FrontSysout {
         System.out.println("3- RELATORIO POR PROFESSOR");
         System.out.println("4- VOLTAR MENU");
     } 
+    public void diasAula() {
+        System.out.println("\n DIAS DE AULA NA UNB \n");
+        System.out.println("2- SEGUNDA-FEIRA");
+        System.out.println("3- TERÇA-FEIRA");
+        System.out.println("4- QUARTA-FEIRA");
+        System.out.println("5- QUINTA-FEIRA");
+        System.out.println("6- SEXTA-FEIRA");
+        System.out.println("7- SÁBADO\n");
+    }
+    public void turnoAula() {
+    System.out.println("QUAL O TURNO DA MATERIA");
+    System.out.println("M- MANHÃ");
+    System.out.println("T- TARDE");
+    System.out.println("N- NOITE");
+    }
 }
