@@ -48,6 +48,7 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
             }
             case 3 -> {
                 // BOLETINS
+                // BOLETIM APARENTEMENTE CRIADO E DBOA
             }
             case 4 -> {
                 super.menu();

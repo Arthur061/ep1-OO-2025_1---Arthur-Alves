@@ -27,6 +27,7 @@ public class buscarDados {
 
     
     // LISTAS E GETTERS PARA MATRICULA
+    // SEPARA DEPOIS DE PROFESSOR A ALUNO
     private final List<String> materiasFinalizadas = new ArrayList<>();
     private final List<String> materiasFazendo = new ArrayList<>();
     private final List<String> turnosList = new ArrayList<>();
@@ -38,6 +39,7 @@ public class buscarDados {
     private final List<String> cargaHorariaList = new ArrayList<>();
     private final List<String> mencaoFinaList = new ArrayList<>();
     private final List<String> materiasReprovadasList = new ArrayList<>();
+    private final List<String> horariosAlunoList = new ArrayList<>();
 
     public String getMatriculaVelha() {return matriculaVelha;}
     public String getNomeVelho() {return nomeVelho;}
@@ -46,6 +48,7 @@ public class buscarDados {
     public String getCondicao () {return condicao;}
     public String getNomeProf() {return professor;}
 
+    public List<String> getHorariosAluno() {return horariosAlunoList;}
     public List<String> getMateriasreprovadas() {return materiasReprovadasList;}
     public List<String> getMencao() {return mencaoFinaList;}
     public List<String> getCargaH() {return cargaHorariaList;}
@@ -69,6 +72,7 @@ public class buscarDados {
         nomeVelho = null;
         cursoVelho = null;
         String mencao = null;
+        String horariosCursando = null;
 
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) { 
             if("alunos.txt".equals(caminhoArquivo)) {
@@ -103,6 +107,14 @@ public class buscarDados {
                                         materiasFazendo.add(materia.trim());
                                     }
                                 }
+                                else if (l.trim().toUpperCase().startsWith("HORARIO:")) {
+                                    horariosCursando = l.substring(l.indexOf(":") + 1).trim();
+                                    String[] horariosArray = horariosCursando.split(",");
+                                    for (String horario : horariosArray) {
+                                        horariosAlunoList.add(horario.trim());
+                                    }
+                                }
+
                                 else if (l.toUpperCase().startsWith("MATERIAS FINALIZADAS:")) {
                                     String materias = l.substring(l.indexOf(":") + 1).trim();
                                     String[] materiasArray = materias.split(",");
