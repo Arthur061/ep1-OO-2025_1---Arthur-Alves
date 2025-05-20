@@ -1,14 +1,17 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 public class LancarNotas {
     buscarDados buscar = new buscarDados();
-    AvaliacoesFrequencia avaliar = new AvaliacoesFrequencia();
 
-    // LNACAMENTO DE NOTAS
+    // LANCAMENTO DE NOTAS
     public void lancamentosNotasFrequencia() throws IOException {
         int ava = 0;
         double notaP1; double listas;
@@ -18,8 +21,7 @@ public class LancarNotas {
         String mencaoStr = null;
 
         System.out.println("Você esta na aba de notas!");
-        ValidarLetrasNum buscarMat = new ValidarLetrasNum();
-        int matricula = buscarMat.verificarMatricula(-1);
+        int matricula = ValidarLetrasNum.verificarMatricula(-1);
 
         buscar.BuscarDados("alunos.txt", String.valueOf(matricula), null);
         String nomeAluno = buscar.getNomeVelho();
@@ -84,16 +86,16 @@ public class LancarNotas {
             System.out.println("Infelizmente você está reprovado por falta.");
             situacao = "REPROVADO POR FALTA";
             mencaoStr = "SR";
-            avaliar.processarReprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
+            processarReprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
         } else if (notaFinal < 5) {
             System.out.println("Você não tem a nota mínima para ser aprovado...");
             situacao = "REPROVADO POR NOTA";
-            avaliar.processarReprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
+            processarReprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
         } else {
             System.out.println("Parabéns! Você foi aprovado :)");
             situacao = "APROVADO";
             try {
-                avaliar.processarAprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
+                processarAprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
             } catch (IOException e) {
                 System.out.println("Erro ao processar aprovação disciplina: " + e.getMessage());
             }
@@ -148,5 +150,153 @@ public class LancarNotas {
                 return "SR";
             }
         }
+    }
+
+    // ALUNO APROVADO
+    public void processarAprovacao(String matricula, String materiaAprovada, String mencaoFinal) throws IOException {
+        Path caminho = Paths.get("alunos.txt");
+        buscar.BuscarDados("alunos.txt", matricula, null);
+
+        List<String> materiasCursando = buscar.getMateriasCursando();
+        List<String> professores = buscar.getNomesProfs();
+        List<String> turnos = buscar.getTurnosList();
+        List<String> horarios = buscar.getHorariosList();
+        List<String> avaliacoes = buscar.getAvaliacaoList();
+        List<String> materiasFinalizadas = buscar.getMateriasFinalizadas();
+        List<String> mencoesFinais = buscar.getMencao();
+
+        List<String> linhas = Files.readAllLines(caminho);
+
+        int indice = -1;
+        for (int i = 0; i < materiasCursando.size(); i++) {
+            if (materiasCursando.get(i).equalsIgnoreCase(materiaAprovada.trim())) {
+                indice = i;
+                break;
+            }
+        }
+
+        if (indice == -1) {
+            System.out.println("Matéria não encontrada entre as matérias cursando.");
+            return;
+        }
+
+        materiasFinalizadas.add(materiasCursando.get(indice));
+        mencoesFinais.add(mencaoFinal.trim());
+
+        materiasCursando.remove(indice);
+        professores.remove(indice);
+        turnos.remove(indice);
+        horarios.remove(indice);
+        avaliacoes.remove(indice);
+    
+        // FAZ ADD AS INFO
+        boolean alunoEncontrado = false;
+        for (int i = 0; i < linhas.size(); i++) {
+            String linha = linhas.get(i);
+            
+            if (linha.startsWith("MATRICULA:")) {
+                alunoEncontrado = linha.contains(matricula);
+            }
+            if (alunoEncontrado) {
+                if (linha.startsWith("MATERIAS CURSANDO:")) {
+                    linhas.set(i, "MATERIAS CURSANDO: " + String.join(", ", materiasCursando));
+
+                } else if (linha.startsWith("MATERIAS FINALIZADAS:")) {
+                    linhas.set(i, "MATERIAS FINALIZADAS: " + String.join(", ", materiasFinalizadas));
+
+                } else if (linha.startsWith("MENÇÕES FINAIS:")) {
+                    linhas.set(i, "MENÇÕES FINAIS: " + String.join(", ", mencoesFinais));
+
+                } else if (linha.startsWith("NOME PROFESSOR:")) {
+                    linhas.set(i, "NOME PROFESSOR: " + String.join(", ", professores));
+                    
+                } else if (linha.startsWith("TURNO:")) {
+                    linhas.set(i, "TURNO: " + String.join(", ", turnos));
+
+                } else if (linha.startsWith("HORARIO:")) {
+                    linhas.set(i, "HORARIO: " + String.join(", ", horarios));
+
+                } else if (linha.startsWith("TIPO AVALIAÇÃO:")) {
+                    linhas.set(i, "TIPO AVALIAÇÃO: " + String.join(", ", avaliacoes));
+                }
+                if (linha.startsWith("TIPO AVALIAÇÃO:")) {
+                    break; 
+                }
+            }
+        }
+        Files.write(caminho, linhas, StandardCharsets.UTF_8);
+        System.out.println("Dados atualizados para a matrícula: " + matricula);
+    }
+
+    // SE O CAMARADA REPROVOU
+    public void processarReprovacao(String matricula, String materiaReprovada, String mencaoFinal) throws IOException {
+        String formatado = materiaReprovada.toUpperCase() + " (" + mencaoFinal + ")";
+        
+        buscar.BuscarDados("alunos.txt", String.valueOf(matricula), null);
+
+        List<String> materiasReprovadas = buscar.getMateriasreprovadas();
+        List<String> materia = buscar.getMateriasCursando();
+        List<String> professor = buscar.getNomesProfs();
+        List<String> turno = buscar.getTurnosList();
+        List<String> horario = buscar.getHorariosList();
+        List<String> avaliacao = buscar.getAvaliacaoList();
+
+        System.out.println("Item a ser adicionado em materias Reprovadas: " + formatado); // check
+        materiasReprovadas.add(formatado);
+
+        List<String> linhas = Files.readAllLines(Paths.get("alunos.txt"));
+
+        int indice = -1;
+        for (int i = 0; i < professor.size(); i++) {
+            System.out.println("Comparando: '" + materia.get(i).trim() + "' com '" + materiaReprovada.trim().toUpperCase() + "'");
+            if (materia.get(i).trim().equalsIgnoreCase(materiaReprovada.trim())) {
+                indice = i;
+                materia.remove(indice);
+                professor.remove(indice);
+                turno.remove(indice);
+                horario.remove(indice);
+                avaliacao.remove(indice);
+                break;
+            }
+        }
+
+        if (indice == -1) {
+            System.out.println(" Materia '" + materiaReprovada.toUpperCase() + "' não encontrada entre as matérias cursando.");
+            return;
+        }
+
+        boolean alunoEncontrado = false;
+        for (int i = 0; i < linhas.size(); i++) {
+            String linha = linhas.get(i);
+            
+            if (linha.startsWith("MATRICULA:")) {
+                alunoEncontrado = linha.contains(matricula);
+            }
+            if (alunoEncontrado) {
+                if (linha.startsWith("MATERIAS CURSANDO:")) {
+                    linhas.set(i, "MATERIAS CURSANDO: " + String.join(", ", materia));
+
+                } else if (linha.startsWith("NOME PROFESSOR:")) {
+                    linhas.set(i, "NOME PROFESSOR: " + String.join(", ", professor));
+                    
+                } else if (linha.startsWith("TURNO:")) {
+                    linhas.set(i, "TURNO: " + String.join(", ", turno));
+
+                } else if (linha.startsWith("HORARIO:")) {
+                    linhas.set(i, "HORARIO: " + String.join(", ", horario));
+
+                } else if (linha.startsWith("TIPO AVALIAÇÃO:")) {
+                    linhas.set(i, "TIPO AVALIAÇÃO: " + String.join(", ", avaliacao));
+                }
+                else if (linha.startsWith("MATERIAS REPROVADAS:")) {
+                    linhas.set(i, "MATERIAS REPROVADAS: " + String.join(", ", materiasReprovadas));
+                }
+                if (linha.startsWith("TIPO AVALIAÇÃO:")) {
+                    break; 
+                }
+            }
+        }
+        Files.write(Paths.get("alunos.txt"), linhas);
+        System.out.println("Processo da disciplina " + materiaReprovada.toUpperCase() + " foi finalizado");
     }
 }

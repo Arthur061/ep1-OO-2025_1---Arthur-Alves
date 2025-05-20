@@ -111,9 +111,16 @@ public class FrontSysout {
         System.out.println("7- SÁBADO\n");
     }
     public void turnoAula() {
-    System.out.println("QUAL O TURNO DA MATERIA");
-    System.out.println("M- MANHÃ");
-    System.out.println("T- TARDE");
-    System.out.println("N- NOITE");
+        System.out.println("QUAL O TURNO DA MATERIA");
+        System.out.println("M- MANHÃ");
+        System.out.println("T- TARDE");
+        System.out.println("N- NOITE");
+    }
+
+    public void selecaoBoletim() {
+        System.out.println("QUAL TIPO DE BOLETIM VOCÊ DESEJA\n");
+        System.out.println("1- BOLETIM COMPLETO");
+        System.out.println("2- BOLETIM SEM OS DADOS DO PROF");
+        System.out.println("3- VOLTAR MENU");
     }
 }
