@@ -2,17 +2,14 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AvaliacoesFrequencia extends MenuPrincipal {
     MenuOptions voltando = new MenuAvaliacao();
     FrontSysout menu = new FrontSysout();
-    buscarDados buscar = new buscarDados();
+   // buscarDados buscar = new buscarDados();
+    gerarBoletim boletim = new gerarBoletim();
     
     public void sistemaNotas () throws IOException {
         menu.MenuAvaliacoes();
@@ -44,11 +41,9 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                         default -> System.out.println("Opção invalida! Tente novamente.");
                     }
                 }
-                
             }
             case 3 -> {
-                // BOLETINS
-                // BOLETIM APARENTEMENTE CRIADO E DBOA
+                boletimDesempenho();
             }
             case 4 -> {
                 super.menu();
@@ -60,156 +55,7 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
         }
     }
 
-    
-    // ALUNO APROVADO
-    public void processarAprovacao(String matricula, String materiaAprovada, String mencaoFinal) throws IOException {
-        Path caminho = Paths.get("alunos.txt");
-        buscar.BuscarDados("alunos.txt", matricula, null);
-
-        List<String> materiasCursando = buscar.getMateriasCursando();
-        List<String> professores = buscar.getNomesProfs();
-        List<String> turnos = buscar.getTurnosList();
-        List<String> horarios = buscar.getHorariosList();
-        List<String> avaliacoes = buscar.getAvaliacaoList();
-        List<String> materiasFinalizadas = buscar.getMateriasFinalizadas();
-        List<String> mencoesFinais = buscar.getMencao();
-
-        List<String> linhas = Files.readAllLines(caminho);
-
-        int indice = -1;
-        for (int i = 0; i < materiasCursando.size(); i++) {
-            if (materiasCursando.get(i).equalsIgnoreCase(materiaAprovada.trim())) {
-                indice = i;
-                break;
-            }
-        }
-
-        if (indice == -1) {
-            System.out.println("Matéria não encontrada entre as matérias cursando.");
-            return;
-        }
-
-        materiasFinalizadas.add(materiasCursando.get(indice));
-        mencoesFinais.add(mencaoFinal.trim());
-
-        materiasCursando.remove(indice);
-        professores.remove(indice);
-        turnos.remove(indice);
-        horarios.remove(indice);
-        avaliacoes.remove(indice);
-    
-        // FAZ ADD AS INFO
-        boolean alunoEncontrado = false;
-        for (int i = 0; i < linhas.size(); i++) {
-            String linha = linhas.get(i);
-            
-            if (linha.startsWith("MATRICULA:")) {
-                alunoEncontrado = linha.contains(matricula);
-            }
-            if (alunoEncontrado) {
-                if (linha.startsWith("MATERIAS CURSANDO:")) {
-                    linhas.set(i, "MATERIAS CURSANDO: " + String.join(", ", materiasCursando));
-
-                } else if (linha.startsWith("MATERIAS FINALIZADAS:")) {
-                    linhas.set(i, "MATERIAS FINALIZADAS: " + String.join(", ", materiasFinalizadas));
-
-                } else if (linha.startsWith("MENÇÕES FINAIS:")) {
-                    linhas.set(i, "MENÇÕES FINAIS: " + String.join(", ", mencoesFinais));
-
-                } else if (linha.startsWith("NOME PROFESSOR:")) {
-                    linhas.set(i, "NOME PROFESSOR: " + String.join(", ", professores));
-                    
-                } else if (linha.startsWith("TURNO:")) {
-                    linhas.set(i, "TURNO: " + String.join(", ", turnos));
-
-                } else if (linha.startsWith("HORARIO:")) {
-                    linhas.set(i, "HORARIO: " + String.join(", ", horarios));
-
-                } else if (linha.startsWith("TIPO AVALIAÇÃO:")) {
-                    linhas.set(i, "TIPO AVALIAÇÃO: " + String.join(", ", avaliacoes));
-                }
-                if (linha.startsWith("TIPO AVALIAÇÃO:")) {
-                    break; 
-                }
-            }
-        }
-        Files.write(caminho, linhas, StandardCharsets.UTF_8);
-        System.out.println("Dados atualizados para a matrícula: " + matricula);
-    }
-
-    // SE O CAMARADA REPROVOU
-    public void processarReprovacao(String matricula, String materiaReprovada, String mencaoFinal) throws IOException {
-        String formatado = materiaReprovada.toUpperCase() + " (" + mencaoFinal + ")";
-        
-        buscar.BuscarDados("alunos.txt", String.valueOf(matricula), null);
-
-        List<String> materiasReprovadas = buscar.getMateriasreprovadas();
-        List<String> materia = buscar.getMateriasCursando();
-        List<String> professor = buscar.getNomesProfs();
-        List<String> turno = buscar.getTurnosList();
-        List<String> horario = buscar.getHorariosList();
-        List<String> avaliacao = buscar.getAvaliacaoList();
-
-        System.out.println("Item a ser adicionado em materias Reprovadas: " + formatado); // check
-        materiasReprovadas.add(formatado);
-
-        List<String> linhas = Files.readAllLines(Paths.get("alunos.txt"));
-
-        int indice = -1;
-        for (int i = 0; i < professor.size(); i++) {
-            System.out.println("Comparando: '" + materia.get(i).trim() + "' com '" + materiaReprovada.trim().toUpperCase() + "'");
-            if (materia.get(i).trim().equalsIgnoreCase(materiaReprovada.trim())) {
-                indice = i;
-                materia.remove(indice);
-                professor.remove(indice);
-                turno.remove(indice);
-                horario.remove(indice);
-                avaliacao.remove(indice);
-                break;
-            }
-        }
-
-        if (indice == -1) {
-            System.out.println(" Materia '" + materiaReprovada.toUpperCase() + "' não encontrada entre as matérias cursando.");
-            return;
-        }
-
-        boolean alunoEncontrado = false;
-        for (int i = 0; i < linhas.size(); i++) {
-            String linha = linhas.get(i);
-            
-            if (linha.startsWith("MATRICULA:")) {
-                alunoEncontrado = linha.contains(matricula);
-            }
-            if (alunoEncontrado) {
-                if (linha.startsWith("MATERIAS CURSANDO:")) {
-                    linhas.set(i, "MATERIAS CURSANDO: " + String.join(", ", materia));
-
-                } else if (linha.startsWith("NOME PROFESSOR:")) {
-                    linhas.set(i, "NOME PROFESSOR: " + String.join(", ", professor));
-                    
-                } else if (linha.startsWith("TURNO:")) {
-                    linhas.set(i, "TURNO: " + String.join(", ", turno));
-
-                } else if (linha.startsWith("HORARIO:")) {
-                    linhas.set(i, "HORARIO: " + String.join(", ", horario));
-
-                } else if (linha.startsWith("TIPO AVALIAÇÃO:")) {
-                    linhas.set(i, "TIPO AVALIAÇÃO: " + String.join(", ", avaliacao));
-                }
-                else if (linha.startsWith("MATERIAS REPROVADAS:")) {
-                    linhas.set(i, "MATERIAS REPROVADAS: " + String.join(", ", materiasReprovadas));
-                }
-                if (linha.startsWith("TIPO AVALIAÇÃO:")) {
-                    break; 
-                }
-            }
-        }
-        Files.write(Paths.get("alunos.txt"), linhas);
-        System.out.println("Processo da disciplina " + materiaReprovada.toUpperCase() + " foi finalizado");
-    }
-
-    // MANDA PARA SUA DEVIDA ESCOLHA
+    // ABA RELATORIOS
     public void relatorios() throws IOException {
         menu.menuRelatorios();
         int escolha = ValidarLetrasNum.lerInteiro("Sua escolha: ");
@@ -221,6 +67,7 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                 List<String> turma = buscarDisciplinasQueRetornamLista("turmas.txt", nomeDisciplina, nomeProfessor);
                 RelatorioTurma gerar = new RelatorioTurma();
                 gerar.relatorioTurma(nomeDisciplina, nomeProfessor);
+                voltando.executar();
             }
             case 2 -> {
                 // RELATORIO POR DISCIPLINA
@@ -228,6 +75,7 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                 List<String> disciplinas = buscarDisciplinasQueRetornamLista("turmas.txt", nomeDisciplina, null);
                 RelatorioDisciplina gerar = new RelatorioDisciplina();
                 gerar.relatorioDisciplina(nomeDisciplina);
+                voltando.executar();
             }
             case 3 -> {
                 // RELATORIO POR PROFESSOR
@@ -236,6 +84,7 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                 System.out.println("Buscando relatorio do professor "+nomeProfessor.toUpperCase()+"...");
                 RelatoriosProfessor gerar = new RelatoriosProfessor();
                 gerar.relatorioProfessor(nomeProfessor);
+                voltando.executar();
 
             }
             case 4 -> {
@@ -265,24 +114,19 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                             if (nomeDisciplinaBuscada != null && l.toUpperCase().contains("NOME DA DISCIPLINA: " + nomeDisciplinaBuscada.toUpperCase())) {
                                 encontrouDisciplina = true;
                             }
-    
                             if (nomeProfessorBuscado != null && l.toUpperCase().contains("NOME PROFESSOR: " + nomeProfessorBuscado.toUpperCase())) {
                                 encontrouDisciplina = true;
                             }
                         }
-    
                         if (encontrouDisciplina) {
                             blocosEncontrados.add(String.join("\n", bloco));
                         }
-    
                         bloco.clear();
                     }
                 } else {
                     bloco.add(linha);
                 }
             }
-    
-            // Adiciona o último bloco, se necessário
             if (!bloco.isEmpty()) {
                 boolean encontrouDisciplina = false;
     
@@ -290,25 +134,51 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                     if (nomeDisciplinaBuscada != null && l.toUpperCase().contains("NOME DA DISCIPLINA: " + nomeDisciplinaBuscada.toUpperCase())) {
                         encontrouDisciplina = true;
                     }
-    
                     if (nomeProfessorBuscado != null && l.toUpperCase().contains("NOME PROFESSOR: " + nomeProfessorBuscado.toUpperCase())) {
                         encontrouDisciplina = true;
                     }
                 }
-    
                 if (encontrouDisciplina) {
                     blocosEncontrados.add(String.join("\n", bloco));
                 }
             }
-    
         } catch (IOException e) {
             System.out.println("Erro ao ler o arquivo: " + e.getMessage());
         }
-    
         return blocosEncontrados;
     }
-    
-    
+
+    // ABA DOS BOLETIM
+    public void boletimDesempenho() throws IOException {
+        int matriculaBusca;
+        int semestreBusca;
+
+        menu.selecaoBoletim();
+        int escolha = ValidarLetrasNum.lerInteiro("Sua escolha: ");
+        switch(escolha) {
+            case 1 -> {
+                // BOLETIM COMPLETO
+                System.out.println("Vamos pegar seu boletim completo! Primeiro, me fale sua matricula.");
+                matriculaBusca = ValidarLetrasNum.verificarMatricula(-1);
+                semestreBusca = ValidarLetrasNum.lerInteiro("Qual semestre você quer o boletim: ");
+                boletim.buscarNoBoletim(matriculaBusca, semestreBusca, true);
+            }
+            case 2 -> {
+                // BOLETIM SEM DADOS DO PROFESSOR
+                System.out.println("Vamos pegar seu boletim parcial, sem os dados do professor! Primeiro, me fale sua matricula.");
+                matriculaBusca = ValidarLetrasNum.verificarMatricula(-1);
+                semestreBusca = ValidarLetrasNum.lerInteiro("Qual semestre você quer o boletim: ");
+                boletim.buscarNoBoletim(matriculaBusca, semestreBusca, false);
+            }
+            case 3 -> {
+                voltando.executar();
+            }
+            default -> {
+                System.out.println("Opção invalida!");
+                boletimDesempenho();
+            }
+        }
+    } 
 }
 
 

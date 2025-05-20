@@ -19,7 +19,7 @@ public class ValidarLetrasNum {
             System.out.print(mensagem);
             entrada = sc.nextLine().trim();
             if (Validador.ehTextoValido(entrada)) {
-                return entrada;
+                return entrada.toUpperCase();
             } else {
                 System.out.println("Entrada inválida. Digite apenas letras.");
             }
@@ -71,7 +71,7 @@ public class ValidarLetrasNum {
     }
 
     // VERIFICAR PROCEDÊNCIA DA MATRÍCULA
-    public int verificarMatricula(int matricula) {
+    public static int verificarMatricula(int matricula) {
         Scanner sc = new Scanner(System.in);
         String matriculaStr;
         while (matricula == -1 || String.valueOf(matricula).length() != 9) {

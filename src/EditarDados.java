@@ -15,49 +15,45 @@ import java.nio.file.Paths;
 public class EditarDados extends DadosAlunosTXT {
     buscarDados buscarInfo = new buscarDados();
 
-    //VERIFICA O .TXT ATRAS DOS DADOS DO ALUNO
     public void editarDados(String parametroBuscar, String campo, String novoValor) {
-    try {
-        Path arquivo = Paths.get("alunos.txt");
+        try {
+            Path arquivo = Paths.get("alunos.txt");
 
-        List<String> linhas = Files.readAllLines(arquivo, StandardCharsets.UTF_8);
-        List<String> novasLinhas = new ArrayList<>();
+            List<String> linhas = Files.readAllLines(arquivo, StandardCharsets.UTF_8);
+            List<String> novasLinhas = new ArrayList<>();
 
-        StringBuilder blocoAtual = new StringBuilder();
-        boolean alunoEncontrado = false;
-        boolean campoAlterado = false;
+            StringBuilder blocoAtual = new StringBuilder();
+            boolean alunoEncontrado = false;
+            boolean campoAlterado = false;
 
-        for (String linha : linhas) {
-            if (linha.startsWith("---------------------")) {
-                if (blocoAtual.length() > 0) { 
-                    ResultadoProcessamento resultado = processarBloco(blocoAtual, parametroBuscar, campo, novoValor); // MANDA PARA O ABATE
-                    alunoEncontrado = alunoEncontrado || resultado.alunoEncontrado;
-                    campoAlterado = campoAlterado || resultado.campoAlterado;
-                    novasLinhas.addAll(resultado.novasLinhas);
+            for (String linha : linhas) {
+                if (linha.startsWith("---------------------")) {
+                    if (blocoAtual.length() > 0) { 
+                        ResultadoProcessamento resultado = processarBloco(blocoAtual, parametroBuscar, campo, novoValor);
+                        alunoEncontrado = alunoEncontrado || resultado.alunoEncontrado;
+                        campoAlterado = campoAlterado || resultado.campoAlterado;
+                        novasLinhas.addAll(resultado.novasLinhas);
+                    }
+                        novasLinhas.add(linha);
+                        blocoAtual.setLength(0); 
+                } else {
+                    blocoAtual.append(linha).append("\n");
                 }
-                    novasLinhas.add(linha);
-                    blocoAtual.setLength(0); 
-            } else {
-                blocoAtual.append(linha).append("\n");
             }
+            if (alunoEncontrado) { 
+                Files.write(arquivo, novasLinhas, StandardCharsets.UTF_8);
+                System.out.println(campoAlterado 
+                    ? " Dados atualizados com sucesso!" 
+                    : " Campo não encontrado para o aluno.");
+                    System.out.println("\n Dados atuais do aluno: ");
+                    buscarInfo.BuscarDados("alunos.txt",novoValor, null);
+            } else {
+                System.out.println(" Aluno '" + parametroBuscar + "' não encontrado.");
+            }
+        } catch (IOException e) {
+            System.out.println(" Erro ao editar: " + e.getMessage());
         }
-
-        if (alunoEncontrado) { //HORA DO VAMO VER 
-            Files.write(arquivo, novasLinhas, StandardCharsets.UTF_8);
-            System.out.println(campoAlterado 
-                ? " Dados atualizados com sucesso!" 
-                : " Campo não encontrado para o aluno.");
-                System.out.println("\n Dados atuais do aluno: ");
-                buscarInfo.BuscarDados("alunos.txt",novoValor, null);
-
-        } else {
-            System.out.println(" Aluno '" + parametroBuscar + "' não encontrado.");
-        }
-
-    } catch (IOException e) {
-        System.out.println(" Erro ao editar: " + e.getMessage());
     }
-}
 
     //CLASSE QUE PROCESSA NO DADO EDITADO
     class ResultadoProcessamento { 
@@ -124,16 +120,13 @@ public class EditarDados extends DadosAlunosTXT {
     // SAIDAS PARA A EDIÇÃO
     public void dado(int i, int matricula) throws IOException {
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula), null);
-
         switch (i) {
             // EDITAR NOME
             case 1 ->EditarNome(matricula);
 
             // EDITAR CURSO
             case 2 -> EditarCurso(matricula);
-            }
-        
-        
+        }
     }
 
     // EDITAR NOME

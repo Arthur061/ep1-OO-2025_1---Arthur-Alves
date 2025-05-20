@@ -8,28 +8,36 @@ import java.util.Scanner;
 public class buscarDados {
     Scanner sc = new Scanner(System.in);
     StringBuilder novoConteudo = new StringBuilder();
-
     StringBuilder blocoAluno = new StringBuilder();
     boolean encontrou = false; String linha; String dado;
 
-    //Variaveis para edição do aluno
+    //VARIAVEIS ALUNO
     private String matriculaVelha; private String nomeVelho; private String cursoVelho; private String condicao; private String materiasCursando;
-    private String semestreAtual; String professor;
+    private String semestreAtual; String professor; private String materiasFall = null; private String mencao; private String horariosCursando;
 
-    String materiasFall = null;
-    String turno = null;
-    String nomeProf = null;
-    String horario = null;
-    String avaliacao = null;
-    String matriculados = null;
-    String materia = null;
-    String cargaH = null;
+    // VARIAVEIS PROFESSOR
+    private String turno = null; private String nomeProf = null; private String horario = null;
+    private String avaliacao = null; private String matriculados = null; private String materia = null; private String cargaH = null;
 
-    
-    // LISTAS E GETTERS PARA MATRICULA
-    // SEPARA DEPOIS DE PROFESSOR A ALUNO
+    //GETTERS ALUNO
+    public String getMatriculaVelha() {return matriculaVelha;}
+    public String getNomeVelho() {return nomeVelho;}
+    public String getSemestreAtual() {return semestreAtual;}
+    public String getCursoVelho () {return cursoVelho;}
+    public String getCondicao () {return condicao;}
+
+    public List<String> getMateriasCursando () {return materiasFazendo;}
+    public List<String> getMateriasFinalizadas() {return materiasFinalizadas;}
+    public List<String> getHorariosAluno() {return horariosAlunoList;}
+    public List<String> getMateriasreprovadas() {return materiasReprovadasList;}
+
+    // LISTAS ALUNO
     private final List<String> materiasFinalizadas = new ArrayList<>();
     private final List<String> materiasFazendo = new ArrayList<>();
+    private final List<String> materiasReprovadasList = new ArrayList<>();
+    private final List<String> horariosAlunoList = new ArrayList<>();
+
+    //LISTAS PROFESSOR
     private final List<String> turnosList = new ArrayList<>();
     private final List<String> avaliacaoList = new ArrayList<>();
     private final List<String> horariosList = new ArrayList<>();
@@ -38,18 +46,10 @@ public class buscarDados {
     private final List<String> materiaList = new ArrayList<>();
     private final List<String> cargaHorariaList = new ArrayList<>();
     private final List<String> mencaoFinaList = new ArrayList<>();
-    private final List<String> materiasReprovadasList = new ArrayList<>();
-    private final List<String> horariosAlunoList = new ArrayList<>();
 
-    public String getMatriculaVelha() {return matriculaVelha;}
-    public String getNomeVelho() {return nomeVelho;}
-    public String getSemestreAtual() {return semestreAtual;}
-    public String getCursoVelho () {return cursoVelho;}
-    public String getCondicao () {return condicao;}
+    // GETTERS PROFESSOR
     public String getNomeProf() {return professor;}
 
-    public List<String> getHorariosAluno() {return horariosAlunoList;}
-    public List<String> getMateriasreprovadas() {return materiasReprovadasList;}
     public List<String> getMencao() {return mencaoFinaList;}
     public List<String> getCargaH() {return cargaHorariaList;}
     public List<String> getmateriaProf() {return materiaList;}
@@ -58,9 +58,6 @@ public class buscarDados {
     public List<String> getTurnosList() {return turnosList;}
     public List<String> getAvaliacaoList() {return avaliacaoList;}
     public List<String> getHorariosList() {return horariosList;}
-    public List<String> getMateriasCursando () {return materiasFazendo;}
-    public List<String> getMateriasFinalizadas() {return materiasFinalizadas;}
-
 
     public void BuscarDados(String caminhoArquivo, String dado, String dadoExtra) {
         
@@ -71,18 +68,18 @@ public class buscarDados {
         matriculaVelha = null;
         nomeVelho = null;
         cursoVelho = null;
-        String mencao = null;
-        String horariosCursando = null;
+        mencao = null;
+        horariosCursando = null;
 
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) { 
-            if("alunos.txt".equals(caminhoArquivo)) {
-            while ((linha = br.readLine()) != null) {
-                if (linha.startsWith("---------------------")) {
+            if("alunos.txt".equals(caminhoArquivo) || "boletimAlunos.txt".equals(caminhoArquivo)) {
+                while ((linha = br.readLine()) != null) {
+                    if (linha.startsWith("---------------------")) {
                         if (blocoAluno.toString().toLowerCase().contains(dado.toLowerCase())) {
                             encontrou = true;
                             System.out.println("\nAluno encontrado:\n" + blocoAluno.toString());
-                            
-                            // Armazena os dados para serem editados pae
+                                
+                            // ARMAZENA OS DADOS PARA FUTURAS ALTERAÇÕES
                             String[] linhas = blocoAluno.toString().split("\n");
                             for (String l : linhas) {
                                 if (l.trim().toUpperCase().startsWith("MATRICULA:")) {
@@ -136,8 +133,6 @@ public class buscarDados {
                                         materiasReprovadasList.add(mFall.trim());
                                     }
                                 }
-                                
-
                                 if (matriculaVelha != null && nomeVelho != null && cursoVelho != null && condicao != null && !materiasFinalizadas.isEmpty() && !materiasFazendo.isEmpty() &&
                                 materiasFinalizadas.isEmpty() && mencaoFinaList.isEmpty() && turnosList.isEmpty() && nomesProfessores.isEmpty() && horariosList.isEmpty() &&
                                 avaliacaoList.isEmpty()) { // TCHAU LOOP AMEM
@@ -145,15 +140,15 @@ public class buscarDados {
                                 }
                             }
                         break;
-                    
+                        }
+                    blocoAluno.setLength(0); 
+                    } else {
+                        blocoAluno.append(linha).append("\n");
+                    }
                 }
-                blocoAluno.setLength(0); 
-                } else {
-                    blocoAluno.append(linha).append("\n");
+                if(!encontrou){
+                    System.out.println("Aluno não encontrado.");
                 }
-            }
-            if(!encontrou){
-                System.out.println("Aluno não encontrado.");}
             } 
             else if ("turmas.txt".equals(caminhoArquivo)) {
                 avaliacaoList.clear();
@@ -166,8 +161,6 @@ public class buscarDados {
                 String linha;
                 StringBuilder blocoProf = new StringBuilder();
                 boolean encontrou = false;
-
-                //não atualiza a lista de alunos na turma.
 
                 while ((linha = br.readLine()) != null) {
                     if (linha.startsWith("---------------------")) {
@@ -227,7 +220,7 @@ public class buscarDados {
                                     }
                                 }
                                 if (turno != null && horario != null && avaliacao != null && matriculados != null && mencao != null) {
-                                }
+                                break;}
                             }
                             break;
                         }

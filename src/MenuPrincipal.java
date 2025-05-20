@@ -6,7 +6,6 @@ import java.util.Map;
 
 public class MenuPrincipal {
 
-    //Chamada do menu()
     public void menu() throws IOException{
         Scanner sc = new Scanner(System.in);
         FrontSysout Menu = new FrontSysout();
@@ -15,7 +14,6 @@ public class MenuPrincipal {
         int opcao = 0;
         boolean Entrada = false;
 
-        // Restrição para letras e números fora do intervalo válido [1, 4]
         while(!Entrada) {
             System.out.print("Sua escolha: ");
 

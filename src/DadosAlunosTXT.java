@@ -40,7 +40,7 @@ public class DadosAlunosTXT  extends Aluno{
         File arquivo = new File("alunos.txt");
 
         if (!arquivo.exists()) {
-            return false; // Arquivo não existe no .txt
+            return false;
         }
         try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
             String linha;

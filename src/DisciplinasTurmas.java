@@ -14,6 +14,15 @@ public class DisciplinasTurmas extends Aluno  {
     buscarDados buscarInfo = new buscarDados();
     MenuOptions voltando = new MenuTurma();
 
+    String nomeEstudante = buscarInfo.getNomeVelho();
+    String curso = buscarInfo.getCursoVelho();
+    String dadoMatricula = buscarInfo.getMatriculaVelha();
+    String nome = buscarInfo.getNomeVelho();
+    String condicao = buscarInfo.getCondicao();
+    List<String> materiasCursando = buscarInfo.getMateriasCursando();
+    List<String> alunosMatriculados = buscarInfo.getmatriculadosList();
+    String ParametroCursando = String.valueOf(materiasCursando);
+
     private static String preRequisito; private static int reqCont;
     public int getReqCont () {
         return reqCont;
@@ -85,16 +94,18 @@ public class DisciplinasTurmas extends Aluno  {
 
         switch (escolha) {
             case 1 -> {
+                // TRANCAR SEMESTRE
                 System.out.println("Vamos trancar o semestre então.");
                 System.out.println("Antes de começar o processo preciso que você me diga sua matricula.");
-                int matricula = verificandomat.verificarMatricula(-1);
+                int matricula = ValidarLetrasNum.verificarMatricula(-1);
                 
                 novosDados.trancarSemestre(matricula);
             }
             case 2 -> {
-                System.out.println("Vamos trancar a matricula desejada.");
+                // TRANCAR DISCIPLINA
+                System.out.println("Vamos trancar a disciplina desejada.");
                 System.out.println("Antes de começar o processo preciso que você me diga sua matricula.");
-                int matricula = verificandomat.verificarMatricula(-1);
+                int matricula = ValidarLetrasNum.verificarMatricula(-1);
                     
                 buscarInfo.BuscarDados("alunos.txt", String.valueOf(matricula), null);
                 String materiaTrancar = ValidarLetrasNum.lerTextoValido("Qual materia você vai querer trancar: ");
@@ -106,23 +117,19 @@ public class DisciplinasTurmas extends Aluno  {
                 } catch (IOException e) {
                     System.out.println("Erro ao tentar trancar disciplina: " + e.getMessage());
                     voltando.executar();
-
                 }
                 break;
-
             }
             case 3 -> {
+                //DESTRANCAR SEMESTRE
                 System.out.println("Vamos destrancar o seu semestre então.");
                 System.out.println("Antes de começar o processo preciso que você me diga sua matricula.");
-                int matricula = verificandomat.verificarMatricula(-1);
-                
+                int matricula = ValidarLetrasNum.verificarMatricula(-1);
                 novosDados.destrancarSemestre(matricula);
-
             }
             case 4 -> {
                 System.out.println("Voltando para menu...");
                 voltando.executar();
-
             }
             default -> {
                 System.out.println("Opção invalida!");
@@ -137,7 +144,6 @@ public class DisciplinasTurmas extends Aluno  {
         String materia; int matricula;
         int numDisciplinas;
         
-
         System.out.println("\nPartiu fazer as matriculas então!\n ");
         materia = ValidarLetrasNum.lerTextoValido("Primeiro, me deixe saber qual matéria você quer se matricular: ");
 
@@ -159,7 +165,6 @@ public class DisciplinasTurmas extends Aluno  {
         for (String req : lista) {
             System.out.println("- " + req);
         }
-
 
         matricula = ValidarLetrasNum.lerInteiro("Me fala qual a sua matricula, por favor: ");
         buscarInfo.BuscarDados("alunos.txt",String.valueOf(matricula), null);
@@ -207,6 +212,8 @@ public class DisciplinasTurmas extends Aluno  {
         List<String> horarioProfessor = buscarInfo.getHorariosList(); 
         List<String> horariosAluno = buscarInfo.getHorariosAluno();
         boolean conflito = false;
+        
+        // CASO TENHA CONFLITO DE HORARIO
         for (String horario : horarioProfessor) {
             if (horariosAluno.contains(horario)) {
                 conflito = true;
@@ -218,16 +225,6 @@ public class DisciplinasTurmas extends Aluno  {
             System.out.println("Voltando para o menu.");
             voltando.executar();
         }
-
-        // GET PARA FAZER A MATRICULA NO TXT
-        String nomeEstudante = buscarInfo.getNomeVelho();
-        String curso = buscarInfo.getCursoVelho();
-        String dadoMatricula = buscarInfo.getMatriculaVelha();
-        String nome = buscarInfo.getNomeVelho();
-        String condicao = buscarInfo.getCondicao();
-        List<String> materiasCursando = buscarInfo.getMateriasCursando();
-        List<String> alunosMatriculados = buscarInfo.getmatriculadosList();
-        String ParametroCursando = String.valueOf(materiasCursando);
         
         if (alunosMatriculados.isEmpty()) {
             System.out.println("A lista de alunos está vazia. Verifique se a linha foi lida corretamente.");
@@ -280,7 +277,7 @@ public class DisciplinasTurmas extends Aluno  {
         EditarDados editarTurmas = new EditarDados();
         editarTurmas.adicionarNovasInfosAoAluno("alunos.txt", nomeEstudante.toUpperCase(), materia.toUpperCase(), profEscolhido.toUpperCase(),
         buscarInfo.getTurnosList(), buscarInfo.getHorariosList(), buscarInfo.getAvaliacaoList(), alunosMatriculados);
-        
+
         addAlunoNaTurma adicionar = new addAlunoNaTurma();
         adicionar.adicionarAlunoNaTurma("turmas.txt", materia, nomeEstudante.toUpperCase());
         System.out.println("Processo de matricula finalizado! Voltando para o menu...");
@@ -424,7 +421,7 @@ public class DisciplinasTurmas extends Aluno  {
                 String linha;
                 while ((linha = br.readLine()) != null) {
                     if (!linha.trim().isEmpty()) {
-                        System.out.println(linha); // SE DER BOM VAI SER AQ
+                        System.out.println(linha);
                     }
                 }
             } catch (IOException e) {
@@ -434,7 +431,7 @@ public class DisciplinasTurmas extends Aluno  {
     }
 
 
-    // VERIFICAR SE O ARQUIVO ESTA VAZIIII CHECK
+    // VERIFICAR SE O ARQUIVO ESTA VAZIO
     public static boolean estaVazio(String caminhoArquivo) {
         boolean arquivoVazio = true; 
 
@@ -443,11 +440,10 @@ public class DisciplinasTurmas extends Aluno  {
 
             while ((linha = br.readLine()) != null) {
                 if (!linha.trim().isEmpty()) {
-                    arquivoVazio = false; // TA VAZIO NÃO PAE
+                    arquivoVazio = false;
                     break; 
                 }
             }
-
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo não encontrado: " + e.getMessage());
             return true; 
@@ -455,12 +451,8 @@ public class DisciplinasTurmas extends Aluno  {
             System.out.println("Erro ao ler o arquivo: " + e.getMessage());
             return true; 
         }
-
         return arquivoVazio;
     }
-    
-    
-
 }
 
 
