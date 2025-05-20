@@ -48,13 +48,13 @@ public class ValidarLetrasNum {
         while (true) {
             System.out.print(mensagem);
             sala = sc.nextLine().trim();
-            if (Pattern.matches(regex, sala)) {
+            if (Pattern.matches(regex, sala.toUpperCase())) {
                 break; 
             } else {
                 System.out.println("Sala não encontrada. O formato válido é I1-I10 ou S1-S10.");
             }
         }
-        return sala;
+        return sala.toUpperCase();
     }
 
     // LER DOUBLE
@@ -68,6 +68,27 @@ public class ValidarLetrasNum {
                 sc.next();
             }
         }
+    }
+
+    // VERIFICAR PROCEDÊNCIA DA MATRÍCULA
+    public int verificarMatricula(int matricula) {
+        Scanner sc = new Scanner(System.in);
+        String matriculaStr;
+        while (matricula == -1 || String.valueOf(matricula).length() != 9) {
+            System.out.print("Digite a matrícula: ");
+            matriculaStr = sc.nextLine().trim();
+            try {
+                matricula = Integer.parseInt(matriculaStr);
+                if (String.valueOf(matricula).length() != 9) {
+                    System.out.println("A matrícula deve conter exatamente 9 dígitos.");
+                    matricula = -1; 
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite apenas números.");
+                matricula = -1;
+            }
+        }
+        return matricula;
     }
 
 }
