@@ -22,7 +22,7 @@ public class DadosAlunosTXT  extends Aluno{
         "",
         "MATERIAS CURSANDO: " + materiasCursando,
         "NOME PROFESSOR: "+ nomeProf,
-        "TURNO: "+turnoProf,
+        "TURNO: " + turnoProf,
         "HORARIO: "+horarioProf,
         "TIPO AVALIAÇÃO: "+tipoAva,
         "---------------------");
@@ -75,7 +75,5 @@ public class DadosAlunosTXT  extends Aluno{
         }
         return nomes;
     }
-
-    
 } 
 

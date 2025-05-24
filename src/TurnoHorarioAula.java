@@ -38,7 +38,7 @@ public class TurnoHorarioAula {
 
     static class Horario {
         public static String formatarHora(String turno, int inicio, int fim) {
-            return switch (turno) {
+            return switch (turno.toUpperCase()) {
                 case "M" -> (inicio == 8 && fim == 10) ? "12" :
                             (inicio == 10 && fim == 12) ? "34" :
                             null;

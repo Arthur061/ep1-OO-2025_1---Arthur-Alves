@@ -74,26 +74,31 @@ public class LancarNotas {
 
         int cargaHoraria = Integer.parseInt(cargaHstr.replace("h", "").trim());
 
-        int totalDias = cargaHoraria / 2; // TOTAL DE DIAS DE AULA (CADA AULA TEM 2H)
-        double presencaHoras = cargaHoraria * 0.75; // PRESENÇA EM HORAS
-        int presencaDias = (int) Math.ceil(presencaHoras / 2.0); // PRESENÇA EM DIAS (ARREDONDADO PRA CIMA)
+        int totalDias = cargaHoraria / 2; 
+        double presencaHoras = cargaHoraria * 0.75; 
+        int presencaDias = (int) Math.ceil(presencaHoras / 2.0); 
         int maxFaltas = totalDias - presencaDias;
 
-        
+
+        String materiaRe = "";
+        String materiaApro = "";
         mencaoStr = Avaliador.obterMencao(notaFinal);
         int faltas = ValidarLetrasNum.lerInteiro("Quantas faltas você tem na materia de "+materiaStr+": ");
         if (faltas > maxFaltas) {
             System.out.println("Infelizmente você está reprovado por falta.");
             situacao = "REPROVADO POR FALTA";
             mencaoStr = "SR";
+            materiaRe = materiaStr+" ("+mencaoStr+")";
             processarReprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
         } else if (notaFinal < 5) {
             System.out.println("Você não tem a nota mínima para ser aprovado...");
             situacao = "REPROVADO POR NOTA";
+            materiaRe = materiaStr+" ("+mencaoStr+")";
             processarReprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
         } else {
             System.out.println("Parabéns! Você foi aprovado :)");
             situacao = "APROVADO";
+            materiaApro = materiaStr+" ("+mencaoStr+")";
             try {
                 processarAprovacao(String.valueOf(matricula), materiaStr, mencaoStr);
             } catch (IOException e) {
@@ -104,7 +109,24 @@ public class LancarNotas {
     System.out.println("Menção final: " + mencaoStr);
 
     gravarAvaliacao(nomeAluno, String.valueOf(matricula), professor, materiaStr, situacao, mencaoStr);
-                    
+    
+    String semestreStr = buscar.getSemestreAtual();
+    int semestre = Integer.parseInt(semestreStr);
+    List<String> materias = buscar.getmateriaProf();
+    String materiasStr = String.join(", ", materias);
+    
+    StringBuilder dadosMaterias = new StringBuilder();
+    dadosMaterias.append("DADOS ").append(materiasStr).append(": PROFESSOR ")
+                            .append(professor.toUpperCase()).append(", ")
+                            .append(buscar.getModoProf()).append(" - SALA ").append(buscar.getSalaprof())
+                            .append(" - CARGA HORARIA ").append(buscar.getCargaH())
+                            .append("\n");
+
+    gerarBoletim gerador = new gerarBoletim();
+    gerador.criarRelatorioAluno("boletimAlunos.txt", semestre, nomeAluno, matricula, buscar.getCursoVelho(), materiaApro, materiaRe, dadosMaterias.toString());
+    System.out.println("Voltando para menu inicial...");
+    MenuOptions voltando = new MenuAvaliacao();
+    voltando.executar();      
     }
 
     // GRAVAR DESEMPENHO DO ALUNO
@@ -155,22 +177,50 @@ public class LancarNotas {
     // ALUNO APROVADO
     public void processarAprovacao(String matricula, String materiaAprovada, String mencaoFinal) throws IOException {
         Path caminho = Paths.get("alunos.txt");
-        buscar.BuscarDados("alunos.txt", matricula, null);
+        buscarDados buscando = new buscarDados();
+        buscando.BuscarDados("alunos.txt", matricula, null);
 
-        List<String> materiasCursando = buscar.getMateriasCursando();
-        List<String> professores = buscar.getNomesProfs();
-        List<String> turnos = buscar.getTurnosList();
-        List<String> horarios = buscar.getHorariosList();
-        List<String> avaliacoes = buscar.getAvaliacaoList();
-        List<String> materiasFinalizadas = buscar.getMateriasFinalizadas();
-        List<String> mencoesFinais = buscar.getMencao();
+        List<String> materiasCursando = buscando.getMateriasCursando();//
+        List<String> professores = buscando.getNomeProfessores(); //
+        List<String> turnos = buscando.getTurnosAluno(); //
+        List<String> horarios = buscando.getHorariosAluno();//
+        List<String> avaliacoes = buscando.getAvaliacoesAluno();
+        List<String> materiasFinalizadas = buscando.getMateriasFinalizadas(); //
+        List<String> mencoesFinais = buscando.getMencao(); //
+
+        System.out.println("----------------------------");
+        System.out.println("Materias Cursando: " + materiasCursando);
+        System.out.println("Professores: " + professores);
+        System.out.println("Turnos: " + turnos);
+        System.out.println("Horarios: " + horarios);
+        System.out.println("Avaliacoes: " + avaliacoes);
+        System.out.println("Materias Finalizadas: " + materiasFinalizadas);
+        System.out.println("Mencoes Finais: " + mencoesFinais);
+        System.out.println("----------------------------");
+
 
         List<String> linhas = Files.readAllLines(caminho);
 
         int indice = -1;
         for (int i = 0; i < materiasCursando.size(); i++) {
+            System.out.println("Verificando matéria no índice " + i + ": '" + materiasCursando.get(i) + "' com '" + materiaAprovada.trim() + "'");
             if (materiasCursando.get(i).equalsIgnoreCase(materiaAprovada.trim())) {
+                System.out.println("Matéria aprovada encontrada no índice " + i);
                 indice = i;
+                materiasFinalizadas.add(materiasCursando.get(indice));
+                mencoesFinais.add(mencaoFinal.trim());
+
+                materiasCursando.remove(indice);
+                professores.remove(indice);
+                turnos.remove(indice);
+                horarios.remove(indice);
+                avaliacoes.remove(indice);
+
+                System.out.println("materiasCursando: " + materiasCursando);
+                System.out.println("professores: " + professores);
+                System.out.println("turnos: " + turnos);
+                System.out.println("horarios: " + horarios);
+                System.out.println("avaliacoes: " + avaliacoes);
                 break;
             }
         }
@@ -180,15 +230,6 @@ public class LancarNotas {
             return;
         }
 
-        materiasFinalizadas.add(materiasCursando.get(indice));
-        mencoesFinais.add(mencaoFinal.trim());
-
-        materiasCursando.remove(indice);
-        professores.remove(indice);
-        turnos.remove(indice);
-        horarios.remove(indice);
-        avaliacoes.remove(indice);
-    
         // FAZ ADD AS INFO
         boolean alunoEncontrado = false;
         for (int i = 0; i < linhas.size(); i++) {
@@ -224,6 +265,13 @@ public class LancarNotas {
                 }
             }
         }
+        System.out.println("Depois da remoção:");
+        System.out.println("materiasCursando: " + materiasCursando);
+        System.out.println("professores: " + professores);
+        System.out.println("turnos: " + turnos);
+        System.out.println("horarios: " + horarios);
+        System.out.println("avaliacoes: " + avaliacoes);
+
         Files.write(caminho, linhas, StandardCharsets.UTF_8);
         System.out.println("Dados atualizados para a matrícula: " + matricula);
     }

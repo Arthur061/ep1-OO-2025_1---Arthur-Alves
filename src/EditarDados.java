@@ -211,20 +211,33 @@ public class EditarDados extends DadosAlunosTXT {
 
     // TRANCAR DISCIPLINA
     public void trancarDisciplina (String parametro, int matricula) throws IOException {
+        buscarDados buscar = new buscarDados();
+        buscar.BuscarDados("alunos.txt", String.valueOf(matricula), null);
         
-        buscarInfo.BuscarDados("alunos.txt", String.valueOf(matricula), null);
+        buscarInfo.BuscarDados("turmas.txt", parametro, null);
 
-        List<String> materia = buscarInfo.getMateriasCursando();
-        List<String> professor = buscarInfo.getNomesProfs();
-        List<String> turno = buscarInfo.getTurnosList();
-        List<String> horario = buscarInfo.getHorariosList();
-        List<String> avaliacao = buscarInfo.getAvaliacaoList();
+        List<String> materia = buscar.getMateriasCursando();
+        List<String> professor = buscar.getNomeProfessores();
+        List<String> turno = buscar.getTurnosAluno();
+        List<String> horario = buscar.getHorariosAluno();
+        List<String> avaliacao = buscar.getAvaliacoesAluno();
 
 
         List<String> linhas = Files.readAllLines(Paths.get("alunos.txt"));
+        System.out.println(parametro);
+        System.out.println(professor);
+
+        System.out.println("Tamanhos das listas:");
+        System.out.println("materia: " + materia.size());
+        System.out.println("professor: " + professor.size());
+        System.out.println("turno: " + turno.size());
+        System.out.println("horario: " + horario.size());
+        System.out.println("avaliacao: " + avaliacao.size());
+
+        
 
         int indice = -1;
-        for (int i = 0; i < professor.size(); i++) {
+        for (int i = 0; i < materia.size(); i++) {
             System.out.println("Comparando: '" + materia.get(i).trim() + "' com '" + parametro.trim().toUpperCase() + "'");
             if (materia.get(i).trim().equalsIgnoreCase(parametro.trim())) {
                 indice = i;
@@ -239,22 +252,32 @@ public class EditarDados extends DadosAlunosTXT {
 
         if (indice == -1) {
             System.out.println(" Materia '" + parametro.toUpperCase() + "' não encontrada entre as matérias cursando.");
+            MenuOptions voltando = new MenuTurma();
+            voltando.executar();
             return;
         }
 
         // REESCREVE OS DADOS SEM TUDO RELACIONADO AO PROF
+        boolean alunoCorreto = false;
         for (int i = 0; i < linhas.size(); i++) {
             String linha = linhas.get(i);
-            if (linha.startsWith("MATERIAS CURSANDO:")) {
-                linhas.set(i, "MATERIAS CURSANDO: " + String.join(", ", materia));
-            } else if (linha.startsWith("NOME PROFESSOR:")) {
-                linhas.set(i, "NOME PROFESSOR: " + String.join(", ", professor));
-            } else if (linha.startsWith("TURNO:")) {
-                linhas.set(i, "TURNO: " + String.join(", ", turno));
-            } else if (linha.startsWith("HORARIO:")) {
-                linhas.set(i, "HORARIO: " + String.join(", ", horario));
-            } else if (linha.startsWith("TIPO AVALIAÇÃO:")) {
-                linhas.set(i, "TIPO AVALIAÇÃO: " + String.join(", ", avaliacao));
+            if (linha.startsWith("MATRICULA:") && linha.contains(String.valueOf(matricula))) {
+                alunoCorreto = true;
+            } else if (linha.startsWith("MATRICULA:")) {
+                alunoCorreto = false;
+            }
+            if (alunoCorreto) {
+                if (linha.startsWith("MATERIAS CURSANDO:")) {
+                    linhas.set(i, "MATERIAS CURSANDO: " + String.join(", ", materia));
+                } else if (linha.startsWith("NOME PROFESSOR:")) {
+                    linhas.set(i, "NOME PROFESSOR: " + String.join(", ", professor));
+                } else if (linha.startsWith("TURNO:")) {
+                    linhas.set(i, "TURNO: " + String.join(", ", turno));
+                } else if (linha.startsWith("HORARIO:")) {
+                    linhas.set(i, "HORARIO: " + String.join(", ", horario));
+                } else if (linha.startsWith("TIPO AVALIAÇÃO:")) {
+                    linhas.set(i, "TIPO AVALIAÇÃO: " + String.join(", ", avaliacao));
+                }
             }
         }
         Files.write(Paths.get("alunos.txt"), linhas);

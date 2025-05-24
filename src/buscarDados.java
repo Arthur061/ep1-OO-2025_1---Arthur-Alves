@@ -30,12 +30,18 @@ public class buscarDados {
     public List<String> getMateriasFinalizadas() {return materiasFinalizadas;}
     public List<String> getHorariosAluno() {return horariosAlunoList;}
     public List<String> getMateriasreprovadas() {return materiasReprovadasList;}
+    public List<String> getTurnosAluno() {return turnosAluno;}
+    public List<String> getNomeProfessores() {return NomeProfessores;}
+    public List<String> getAvaliacoesAluno() {return avaliacoesAluno;}
 
     // LISTAS ALUNO
     private final List<String> materiasFinalizadas = new ArrayList<>();
     private final List<String> materiasFazendo = new ArrayList<>();
     private final List<String> materiasReprovadasList = new ArrayList<>();
     private final List<String> horariosAlunoList = new ArrayList<>();
+    private final List<String> turnosAluno = new ArrayList<>(); 
+    private final List<String> NomeProfessores = new ArrayList<>();
+    private final List<String> avaliacoesAluno = new ArrayList<>();
 
     //LISTAS PROFESSOR
     private final List<String> turnosList = new ArrayList<>();
@@ -46,6 +52,8 @@ public class buscarDados {
     private final List<String> materiaList = new ArrayList<>();
     private final List<String> cargaHorariaList = new ArrayList<>();
     private final List<String> mencaoFinaList = new ArrayList<>();
+    private final List<String> modoList = new ArrayList<>();
+    private final List<String> salaList = new ArrayList<>();
 
     // GETTERS PROFESSOR
     public String getNomeProf() {return professor;}
@@ -58,6 +66,8 @@ public class buscarDados {
     public List<String> getTurnosList() {return turnosList;}
     public List<String> getAvaliacaoList() {return avaliacaoList;}
     public List<String> getHorariosList() {return horariosList;}
+    public List<String> getModoProf() {return modoList;}
+    public List<String> getSalaprof() {return salaList;}
 
     public void BuscarDados(String caminhoArquivo, String dado, String dadoExtra) {
         
@@ -133,9 +143,25 @@ public class buscarDados {
                                         materiasReprovadasList.add(mFall.trim());
                                     }
                                 }
+                                else if (l.trim().toUpperCase().startsWith("NOME PROFESSOR:")) {
+                                    String[] professores = l.substring(l.indexOf(":") + 1).split(",");
+                                    for (String p : professores) {
+                                        NomeProfessores.add(p.trim());
+                                    }
+                                } else if (l.trim().toUpperCase().startsWith("TURNO:")) {
+                                    String[] turnos = l.substring(l.indexOf(":") + 1).split(",");
+                                    for (String t : turnos) {
+                                        turnosAluno.add(t.trim());
+                                    }
+                                }
+                                else if (l.trim().toUpperCase().startsWith("TIPO AVALIAÇÃO:")) {
+                                    String[] avaliacoes = l.substring(l.indexOf(":") + 1).split(",");
+                                    for (String a : avaliacoes) {
+                                        avaliacoesAluno.add(a.trim());
+                                    }
+                                }
                                 if (matriculaVelha != null && nomeVelho != null && cursoVelho != null && condicao != null && !materiasFinalizadas.isEmpty() && !materiasFazendo.isEmpty() &&
-                                materiasFinalizadas.isEmpty() && mencaoFinaList.isEmpty() && turnosList.isEmpty() && nomesProfessores.isEmpty() && horariosList.isEmpty() &&
-                                avaliacaoList.isEmpty()) { // TCHAU LOOP AMEM
+                                 mencaoFinaList.isEmpty()) { // TCHAU LOOP AMEM
                                     break;
                                 }
                             }
@@ -217,6 +243,20 @@ public class buscarDados {
                                     String[] avaliacosArray = avaliacao.split(",");
                                     for(String ava : avaliacosArray) {
                                         avaliacaoList.add(ava.trim());
+                                    }
+                                }
+                                else if (l.trim().toUpperCase().startsWith("MODO:")) {
+                                    String modo = l.substring(l.indexOf(":") + 1).trim();
+                                    String[] modosArray = modo.split(",");
+                                    for (String m : modosArray) {
+                                        modoList.add(m.trim());
+                                    }
+                                }
+                                else if (l.trim().toUpperCase().startsWith("SALA:")) {
+                                    String sala = l.substring(l.indexOf(":") + 1).trim();
+                                    String[] salasArray = sala.split(",");
+                                    for (String s : salasArray) {
+                                        salaList.add(s.trim());
                                     }
                                 }
                                 if (turno != null && horario != null && avaliacao != null && matriculados != null && mencao != null) {

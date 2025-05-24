@@ -29,7 +29,7 @@ public class gerarBoletim {
         }
     }
 
-    public void buscarNoBoletim(int matricula, int semestre, boolean mostrarCompleto) {
+    public void buscarNoBoletim(int matricula, int semestre, boolean mostrarCompleto) throws IOException {
         File arquivo = new File("boletimAlunos.txt");
         if (!arquivo.exists()) {
             System.out.println("Não há registros de boletim ate o momento.");
@@ -70,5 +70,6 @@ public class gerarBoletim {
         } catch (IOException e) {
             System.out.println("Erro ao ler o arquivo: " + e.getMessage());
         }
+        System.out.println("Voltando para menu inicial...");
     }
 }

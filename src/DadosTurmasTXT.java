@@ -21,7 +21,7 @@ public class DadosTurmasTXT {
 
     // CADASTRAR TURMA NOVA
      public static void turmasTXT(String caminhoArquivo, String nomeProf, String nomeDisciplina, int codigo, int cargaH, 
-     String preReq, int capacidade, String avaliacao, String turno, String sala, int horarioI, int horarioF, String modo)
+     String preReq, int capacidade, String avaliacao, String turno, String sala, String horarioFormatado, String modo)
       {
         String dadosTurma = String.join("\n", 
         "---------------------",
@@ -35,7 +35,7 @@ public class DadosTurmasTXT {
         "TURNO: "+ turno,
         "MODO: "+ modo,
         "SALA: "+ sala,
-        "HORARIO: "+ horarioI+"h até "+horarioF+"h",
+        "HORARIO: "+ horarioFormatado,
         "ALUNOS MATRICULADOS: ",
         "---------------------");
 

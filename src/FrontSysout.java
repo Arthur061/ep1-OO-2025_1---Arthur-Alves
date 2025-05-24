@@ -97,7 +97,7 @@ public class FrontSysout {
     public void menuRelatorios() {
         System.out.println("\n Estamos na aba de relatorios!\n Oque você deseja?\n");
         System.out.println("1- RELATORIO POR TURMA");
-        System.out.println("2- RELATORIO POR DSICPLINA");
+        System.out.println("2- RELATORIO POR DISCIPLINA");
         System.out.println("3- RELATORIO POR PROFESSOR");
         System.out.println("4- VOLTAR MENU");
     } 

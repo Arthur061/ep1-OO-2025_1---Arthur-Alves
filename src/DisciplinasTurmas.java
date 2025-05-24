@@ -13,15 +13,7 @@ public class DisciplinasTurmas extends Aluno  {
     private static Scanner sc = new Scanner(System.in);
     buscarDados buscarInfo = new buscarDados();
     MenuOptions voltando = new MenuTurma();
-
-    String nomeEstudante = buscarInfo.getNomeVelho();
-    String curso = buscarInfo.getCursoVelho();
-    String dadoMatricula = buscarInfo.getMatriculaVelha();
-    String nome = buscarInfo.getNomeVelho();
-    String condicao = buscarInfo.getCondicao();
-    List<String> materiasCursando = buscarInfo.getMateriasCursando();
-    List<String> alunosMatriculados = buscarInfo.getmatriculadosList();
-    String ParametroCursando = String.valueOf(materiasCursando);
+    String horarioFormat = "";
 
     private static String preRequisito; private static int reqCont;
     public int getReqCont () {
@@ -202,7 +194,6 @@ public class DisciplinasTurmas extends Aluno  {
                 System.out.println("Você possui o pre-requisito: " + req);
             }
         }
-        
         if (possuiTodos) {
             System.out.println(" Todos os pre-requisitos foram cumpridos. Você pode se matricular!");
             profEscolhido = ValidarLetrasNum.lerTextoValido("Qual professor você escolhe para a materia de "+materia.toUpperCase()+":");
@@ -212,6 +203,30 @@ public class DisciplinasTurmas extends Aluno  {
         List<String> horarioProfessor = buscarInfo.getHorariosList(); 
         List<String> horariosAluno = buscarInfo.getHorariosAluno();
         boolean conflito = false;
+        buscarInfo.BuscarDados("alunos.txt", String.valueOf(matricula), null);
+
+        String nomeEstudante = buscarInfo.getNomeVelho();
+        String curso = buscarInfo.getCursoVelho();
+        String dadoMatricula = buscarInfo.getMatriculaVelha();
+        String nome = buscarInfo.getNomeVelho();
+        String condicao = buscarInfo.getCondicao();
+        List<String> materiasCursando = buscarInfo.getMateriasCursando();
+        List<String> alunosMatriculados = buscarInfo.getmatriculadosList();
+        String ParametroCursando = String.valueOf(materiasCursando);
+
+        System.out.println("===== DEBUG DOS DADOS DO ESTUDANTE =====");
+        System.out.println("Nome do Estudante (nomeEstudante): " + buscarInfo.getNomeVelho());
+        System.out.println("Curso: " + buscarInfo.getCursoVelho());
+        System.out.println("Matrícula: " + buscarInfo.getMatriculaVelha());
+        System.out.println("Nome (repetido): " + buscarInfo.getNomeVelho());
+        System.out.println("Condição: " + buscarInfo.getCondicao());
+
+        System.out.println("Matérias Cursando (List): " + materiasCursando);
+        System.out.println("Matérias Cursando (String): " + String.valueOf(materiasCursando));
+
+        System.out.println("Alunos Matriculados: " + alunosMatriculados);
+        System.out.println("===== FIM DO DEBUG =====");
+
         
         // CASO TENHA CONFLITO DE HORARIO
         for (String horario : horarioProfessor) {
@@ -233,6 +248,7 @@ public class DisciplinasTurmas extends Aluno  {
         }
 
         // CONDIÇÃO PARA FAZER AS MATRICULAS
+        System.out.println(condicao);
         boolean condicaoAluno;
         switch(condicao) {
             case "SIM" -> {
@@ -285,7 +301,7 @@ public class DisciplinasTurmas extends Aluno  {
     }
 
     // CADASTRAR NOVAS DISCIPLINAS
-    public void cadastrarDisciplina () {
+    public void cadastrarDisciplina () throws IOException {
 
         FrontSysout front = new FrontSysout();
 
@@ -327,9 +343,9 @@ public class DisciplinasTurmas extends Aluno  {
 
             int turnoEscolhido = ValidarLetrasNum.lerInteiro("Sua escolha: ");
             switch (turnoEscolhido) {
-                case 1 -> turno = "MANHÃ";
-                case 2 -> turno = "TARDE";
-                case 3 -> turno = "NOITE";
+                case 1 -> turno = "M";
+                case 2 -> turno = "T";
+                case 3 -> turno = "N";
                 default -> {
                     System.out.println("Escolha inválida. Digite 1, 2 ou 3.");
                     continue;
@@ -339,12 +355,30 @@ public class DisciplinasTurmas extends Aluno  {
             
             horarioInicio = ValidarLetrasNum.lerInteiro("Horario de inicio: ");
             horarioFinal = ValidarLetrasNum.lerInteiro("Horario de termino: ");
+            int dia01 = 0; int dia02 = 0; int dia03 = 0;
+            front.diasAula();
+            switch (cargaH) {
+                case 30 -> dia01 = ValidarLetrasNum.lerInteiro("Qual o dia de aula: ");
+                case 60 -> {
+                    dia01 = ValidarLetrasNum.lerInteiro("Qual o 1º dia de aula: ");
+                    dia02 = ValidarLetrasNum.lerInteiro("Qual o 2º dia de aula: ");
+                }
+                case 90 -> {
+                    dia01 = ValidarLetrasNum.lerInteiro("Qual o 1º dia de aula: ");
+                    dia02 = ValidarLetrasNum.lerInteiro("Qual o 2º dia de aula: ");
+                    dia03 = ValidarLetrasNum.lerInteiro("Qual o 3º dia de aula: ");
+                }
+                default -> {
+                }
+            }
+            List<Integer> diasSemana = new ArrayList<>(List.of(dia01, dia02, dia03));
 
             if (horarioFinal <= horarioInicio) {
                 System.out.println("Horário de término deve ser maior que o horário de início.");
                 continue;
             }
-
+            TurnoHorarioAula horarioF = new TurnoHorarioAula();
+            horarioFormat = horarioF.horarioAulaFormatado(diasSemana, turno, horarioInicio, horarioFinal);
             break;
         }
 
@@ -406,7 +440,10 @@ public class DisciplinasTurmas extends Aluno  {
         }
 
 
-        DadosTurmasTXT.turmasTXT("turmas.txt", nomeProf.toUpperCase(), nomeDisciplina.toUpperCase(), codigo, cargaH, preReq.toUpperCase(), maxAlunos, ava, turno.toUpperCase(), sala.toUpperCase(), horarioInicio, horarioFinal, modo.toUpperCase());
+        DadosTurmasTXT.turmasTXT("turmas.txt", nomeProf.toUpperCase(), nomeDisciplina.toUpperCase(), codigo, cargaH, preReq.toUpperCase(),
+         maxAlunos, ava, turno.toUpperCase(), sala.toUpperCase(), horarioFormat, modo.toUpperCase());
+
+         voltando.executar();
         
     }
 

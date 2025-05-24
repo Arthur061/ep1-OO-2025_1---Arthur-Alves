@@ -38,7 +38,9 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                             voltando.executar();
                             break OUTER;
                         }
-                        default -> System.out.println("Opção invalida! Tente novamente.");
+                        default -> {System.out.println("Opção invalida! ");
+                        voltando.executar();
+                        }
                     }
                 }
             }
@@ -162,6 +164,9 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                 matriculaBusca = ValidarLetrasNum.verificarMatricula(-1);
                 semestreBusca = ValidarLetrasNum.lerInteiro("Qual semestre você quer o boletim: ");
                 boletim.buscarNoBoletim(matriculaBusca, semestreBusca, true);
+
+                System.out.println("Voltando para menu inicial...");
+                voltando.executar();
             }
             case 2 -> {
                 // BOLETIM SEM DADOS DO PROFESSOR
@@ -169,6 +174,9 @@ public class AvaliacoesFrequencia extends MenuPrincipal {
                 matriculaBusca = ValidarLetrasNum.verificarMatricula(-1);
                 semestreBusca = ValidarLetrasNum.lerInteiro("Qual semestre você quer o boletim: ");
                 boletim.buscarNoBoletim(matriculaBusca, semestreBusca, false);
+
+                System.out.println("Voltando para menu inicial...");
+                voltando.executar();
             }
             case 3 -> {
                 voltando.executar();
